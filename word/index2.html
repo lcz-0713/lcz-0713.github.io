@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文本对比器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,6 +69,37 @@
             color: #b22c2c;
             text-decoration: underline;
         }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result div {
+            width: 48%;
+            white-space: pre-wrap;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            min-height: 150px;
+            overflow: auto;
+            background: #3333;
+        }
     </style>
 </head>
 <body>
@@ -82,7 +114,7 @@
             <div id="result2"></div>
         </div>
     </div>
-
+    <script src="../script.js"></script>
     <script>
         function updateComparison() {
             const text1 = document.getElementById('text1').value;

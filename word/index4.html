@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown 编辑器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,6 +69,30 @@
         .btn-container {
             text-align: center;
         }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .preview {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
     </style>
 </head>
 <body>
@@ -81,7 +106,7 @@
             <button onclick="downloadPDF()">导出为 PDF</button>
         </div>
     </div>
-
+    <script src="../script.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.12/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.6.0/jspdf.umd.min.js"></script>
 
