@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lichenzhen的工具箱</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            background: linear-gradient(45deg, #4caf50, #ff9800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5em;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        h3 {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .search-box {
+            margin: 0 auto 20px auto;
+            max-width: 600px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-box input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            outline: none;
+        }
+        .search-box input[type="text"]:focus {
+            border-color: #4caf50;
+        }
+        .category {
+            margin-bottom: 30px;
+        }
+        .category h2 {
+            border-bottom: 2px solid;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #333;
+        }
+        .category:nth-of-type(1) h2 {
+            color: #4caf50;
+            border-color: #4caf50;
+        }
+        .category:nth-of-type(2) h2 {
+            color: #2196f3;
+            border-color: #2196f3;
+        }
+        .category:nth-of-type(3) h2 {
+            color: #ff9800;
+            border-color: #ff9800;
+        }
+        .category:nth-of-type(4) h2 {
+            color: #9c27b0;
+            border-color: #9c27b0;
+        }
+        .category:nth-of-type(5) h2 {
+            color: #f44336;
+            border-color: #f44336;
+        }
+        .category:nth-of-type(6) h2 {
+            color: #3f51b5;
+            border-color: #3f51b5;
+        }
+        .category:nth-of-type(7) h2 {
+            color: #e91e63;
+            border-color: #e91e63;
+        }
+        .category:nth-of-type(8) h2 {
+            color: #00bcd4;
+            border-color: #00bcd4;
+        }
+        .category:nth-of-type(9) h2 {
+            color: #8bc34a;
+            border-color: #8bc34a;
+        }
+        .category:nth-of-type(10) h2 {
+            color: #673ab7;
+            border-color: #673ab7;
+        }
+        .category:nth-of-type(11) h2 {
+            color: #ffc107;
+            border-color: #ffc107;
+        }
+        .tools {
+            list-style-type: none;
+            padding-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .tools li {
+            margin-bottom: 10px;
+        }
+        .tools li a {
+            display: block;
+            padding: 15px;
+            background-color: #f0f0f0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.3s;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .tools li a:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-3px);
+        }
+        .tools li a:active {
+            transform: translateY(0);
+        }
+        .switch-version {
+            display: block;
+            margin: 20px auto;
+            background-color: #4caf50;
+            color: #fff;
+            border: 2px solid #4caf50;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1em;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .switch-version:hover {
+            background-color: #45a049;
+            border-color: #45a049;
+        }
+        .switch-version:active {
+            background-color: #388e3c;
+            border-color: #388e3c;
+        }
+        @media (max-width: 768px) {
+            .tools {
+                grid-template-columns: 1fr;
+            }
+        }
+        @keyframes pulse {
+            0% {
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            }
+            50% {
+                text-shadow: 3px 3px 12px rgba(0,0,0,0.4);
+            }
+            100% {
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>lichenzhen的工具箱</h1>
+        <h3>当前工具数量：46</h3>
+
+        <!-- 搜索框 -->
+        <div class="search-box">
+            <input type="text" id="search" placeholder="搜索工具..." onkeyup="searchTools()">
+        </div>
+
+        <div class="category">
+            <h2>计算器工具</h2>
+            <ul class="tools">
+                <li><a href="calculator/index1.html">标准计算器</a></li>
+                <li><a href="calculator/index2.html">科学计算器</a></li>
+                <li><a href="calculator/index3.html">投资回报计算器</a></li>
+                <li><a href="calculator/index4.html">贷款/抵押计算器</a></li>
+                <li><a href="calculator/index5.html">进制转换器</a></li>
+            </ul>
+        </div>
+        
+        <div class="category">
+            <h2>时间管理工具</h2>
+            <ul class="tools">
+                <li><a href="time/index1.html">世界时钟</a></li>
+                <li><a href="time/index2.html">倒计时器</a></li>
+                <li><a href="time/index3.html">番茄钟</a></li>
+                <li><a href="time/index4.html">时间转换器</a></li>
+            </ul>
+        </div>
+        
+        <div class="category">
+            <h2>单位转换工具</h2>
+            <ul class="tools">
+                <li><a href="conversion/index1.html">长度转换</a></li>
+                <li><a href="conversion/index2.html">重量转换</a></li>
+                <li><a href="conversion/index3.html">温度转换</a></li>
+                <li><a href="conversion/index4.html">货币转换</a></li>
+            </ul>
+        </div>
+
+        <div class="category">
+            <h2>文本处理工具</h2>
+            <ul class="tools">
+                <li><a href="word/index1.html">字数统计器</a></li>
+                <li><a href="word/index2.html">文本对比器</a></li>
+                <li><a href="word/index3.html">AES/DES加密解密工具</a></li>
+                <li><a href="word/index4.html">Markdown编辑器</a></li>
+            </ul>
+        </div>
+
+        <div class="category">
+            <h2>颜色工具</h2>
+            <ul class="tools">
+                <li><a href="color/index1.html">图片取色器</a></li>
+                <li><a href="color/index2.html">色码转换器 (HEX, RGB, HSL)</a></li>
+                <li><a href="color/index3.html">调色板生成器</a></li>
+                <li><a href="color/index4.html">渐变色生成器</a></li>
+            </ul>
+        </div>
+
+        <div class="category">
+            <h2>开发工具</h2>
+            <ul class="tools">
+                <li><a href="development/index1.html">JSON格式化工具</a></li>
+                <li><a href="development/index2.html">正则表达式测试工具</a></li>
+                <li><a href="development/index3.html">代码高亮工具</a></li>
+                <li><a href="development/index4.html">HTTP请求模拟器</a></li>
+            </ul>
+        </div>
+
+        <div class="category">
+            <h2>健康工具</h2>
+            <ul class="tools">
+                <li><a href="health/index1.html">BMI计算器</a></li>
+                <li><a href="health/index2.html">每日卡路里需求计算器</a></li>
+                <li><a href="health/index3.html">心率计算器</a></li>
+            </ul>
+        </div>
+
+        <div class="category">
+            <h2>图像处理工具</h2>
+            <ul class="tools">
+                <li><a href="photo/index1.html">图片压缩器</a></li>
+                <li><a href="photo/index2.html">图片编辑工具</a></li>
+                <li><a href="photo/index3.html">图片格式转换器</a></li>
+            </ul>
+        </div>
+
+        <div class="category">
+            <h2>网络工具</h2>
+            <ul class="tools">
+                <li><a href="Internet/index1.html">IP地址查询</a></li>
+                <li><a href="Internet/index2.html">DNS查询</a></li>
+                <li><a href="Internet/index3.html">Ping测试工具</a></li>
+                <li><a href="Internet/index4.html">密码强度检查器</a></li>
+            </ul>
+        </div>
+
+        <div class="category">
+            <h2>娱乐工具</h2>
+            <ul class="tools">
+                <li><a href="happy/index1.html">随机数生成器</a></li>
+                <li><a href="happy/index2.html">抽签工具</a></li>
+                <li><a href="happy/index3.html">二维码生成器</a></li>
+                <li><a href="happy/index4.html">猜数字游戏</a></li>
+                <li><a href="happy/index5.html">大转盘抽奖工具</a></li>
+            </ul>
+        </div>
+
+        <div class="category">
+            <h2>其它工具</h2>
+            <ul class="tools">
+                <li><a href="others/index1.html">反应速度测试</a></li>
+                <li><a href="others/index2.html">CPS测试</a></li>
+                <li><a href="others/index3.html">Elo等级分计算</a></li>
+                <li><a href="others/index4.html">音频格式转换器</a></li>
+                <li><a href="others/index5.html">视频格式转换器</a></li>
+            </ul>
+        </div>
+        
+        <!-- 切换到旧版页面按钮 -->
+        <a href="old-version.html" class="switch-version">切换到旧版页面</a>
+    </div>
+
+    <!-- JavaScript 实现搜索功能 -->
+    <script>
+        function searchTools() {
+            var input, filter, categories, tools, a, i, j, txtValue;
+            input = document.getElementById('search');
+            filter = input.value.toUpperCase();
+            categories = document.getElementsByClassName('category');
+            
+            for (i = 0; i < categories.length; i++) {
+                tools = categories[i].getElementsByTagName('li');
+                let categoryVisible = false;
+
+                for (j = 0; j < tools.length; j++) {
+                    a = tools[j].getElementsByTagName('a')[0];
+                    txtValue = a.textContent || a.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tools[j].style.display = '';
+                        categoryVisible = true;
+                    } else {
+                        tools[j].style.display = 'none';
+                    }
+                }
+
+                if (categoryVisible) {
+                    categories[i].style.display = '';
+                } else {
+                    categories[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
