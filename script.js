@@ -33,18 +33,18 @@ function applyDarkMode() {
 
     if (localStorage.getItem('darkMode') === 'enabled') {
         body.classList.add('dark-mode');
-        if (button) {
-            button.textContent = '切换普通模式';
-            button.style.backgroundColor = '#f44336';
-            button.style.borderColor = '#f44336';
-        }
+        // if (button) {
+        //     button.textContent = '切换普通模式';
+        //     button.style.backgroundColor = '#f44336';
+        //     button.style.borderColor = '#f44336';
+        // }
     } else {
         body.classList.remove('dark-mode');
-        if (button) {
-            button.textContent = '切换暗黑模式';
-            button.style.backgroundColor = '#4caf50';
-            button.style.borderColor = '#4caf50';
-        }
+        // if (button) {
+        //     button.textContent = '切换暗黑模式';
+        //     button.style.backgroundColor = '#4caf50';
+        //     button.style.borderColor = '#4caf50';
+        // }
     }
 }
 
