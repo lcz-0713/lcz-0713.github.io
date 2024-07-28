@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片格式转换器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px; /* 调窄宽度 */
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"], select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .result img {
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
+            border-radius: 0; /* 去掉圆角 */
+        }
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .download-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>图片格式转换器</h1>
+        <div class="form-group">
+            <label for="uploadImage">上传图片:</label>
+            <input type="file" id="uploadImage" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label for="format">选择输出格式:</label>
+            <select id="format">
+                <option value="image/jpeg">JPEG (.jpg)</option>
+                <option value="image/png">PNG (.png)</option>
+                <option value="image/gif">GIF (.gif)</option>
+                <option value="image/webp">WEBP (.webp)</option>
+                <option value="image/bmp">BMP (.bmp)</option>
+                <option value="image/tiff">TIFF (.tiff)</option>
+                <option value="image/heif">HEIF (.heif)</option>
+                <option value="image/avif">AVIF (.avif)</option>
+                <option value="image/svg+xml">SVG (.svg)</option>
+                <option value="image/x-icon">ICO (.ico)</option>
+            </select>
+        </div>
+        <button id="convertButton">转换图片</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/icojs/0.0.1/ico.min.js"></script>
+    <script>
+        const uploadImage = document.getElementById('uploadImage');
+        const formatSelect = document.getElementById('format');
+        const convertButton = document.getElementById('convertButton');
+        const resultDiv = document.getElementById('result');
+
+        convertButton.addEventListener('click', () => {
+            const file = uploadImage.files[0];
+            const format = formatSelect.value;
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        // Create a canvas element to draw the image
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        // Set canvas size based on image dimensions
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+
+                        // Draw the image on the canvas
+                        ctx.drawImage(img, 0, 0);
+
+                        // Get the image data URL in the selected format
+                        let imageURL;
+                        let fileName;
+                        if (format === 'image/svg+xml') {
+                            // SVG format: output the SVG data directly
+                            imageURL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+                                `<svg xmlns="http://www.w3.org/2000/svg" width="${img.width}" height="${img.height}">
+                                    <image href="${e.target.result}" width="${img.width}" height="${img.height}" />
+                                </svg>`
+                            );
+                            fileName = 'converted_image.svg';
+                        } else if (format === 'image/x-icon') {
+                            // ICO format: use ico.js to generate the ICO file
+                            icojs.encode([canvas.toDataURL('image/png')], (icoData) => {
+                                imageURL = URL.createObjectURL(new Blob([icoData], { type: 'image/x-icon' }));
+                                fileName = 'converted_image.ico';
+                                displayImageAndLink(imageURL, fileName);
+                            });
+                            return;
+                        } else {
+                            imageURL = canvas.toDataURL(format);
+                            fileName = `converted_image.${format.split('/')[1]}`;
+                        }
+
+                        displayImageAndLink(imageURL, fileName);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                resultDiv.innerHTML = '<p>请上传图片文件。</p>';
+            }
+        });
+
+        function displayImageAndLink(imageURL, fileName) {
+            resultDiv.innerHTML = `
+                <h2>转换后的图片:</h2>
+                <img src="${imageURL}" alt="Converted Image">
+                <a href="${imageURL}" download="${fileName}" class="download-button">下载图片</a>
+            `;
+        }
+    </script>
+</body>
+</html>
