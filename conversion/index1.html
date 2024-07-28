@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长度转换工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>长度转换工具</h1>
+        <div class="form-group">
+            <label for="length">输入长度:</label>
+            <input type="number" id="length" placeholder="请输入长度" step="0.01">
+        </div>
+        <div class="form-group">
+            <label for="fromUnit">从:</label>
+            <select id="fromUnit">
+                <option value="m">米 (m)</option>
+                <option value="km">千米 (km)</option>
+                <option value="cm">厘米 (cm)</option>
+                <option value="mm">毫米 (mm)</option>
+                <option value="in">英寸 (in)</option>
+                <option value="ft">英尺 (ft)</option>
+                <option value="yd">码 (yd)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="toUnit">到:</label>
+            <select id="toUnit">
+                <option value="m">米 (m)</option>
+                <option value="km">千米 (km)</option>
+                <option value="cm">厘米 (cm)</option>
+                <option value="mm">毫米 (mm)</option>
+                <option value="in">英寸 (in)</option>
+                <option value="ft">英尺 (ft)</option>
+                <option value="yd">码 (yd)</option>
+            </select>
+        </div>
+        <button onclick="convertLength()">转换</button>
+        <div id="result" class="result">
+            <p>结果: <span id="convertedLength" class="highlight">0</span> <span id="convertedUnit" class="highlight">单位</span></p>
+        </div>
+    </div>
+
+    <script>
+        function convertLength() {
+            const length = parseFloat(document.getElementById('length').value);
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+
+            if (isNaN(length)) {
+                document.getElementById('convertedLength').innerText = '错误的输入';
+                document.getElementById('convertedUnit').innerText = '';
+                return;
+            }
+
+            const conversionRates = {
+                'm': 1,
+                'km': 0.001,
+                'cm': 100,
+                'mm': 1000,
+                'in': 39.3701,
+                'ft': 3.28084,
+                'yd': 1.09361
+            };
+
+            // Convert input to meters
+            const lengthInMeters = length / conversionRates[fromUnit];
+            // Convert meters to target unit
+            const convertedLength = lengthInMeters * conversionRates[toUnit];
+
+            // Format result
+            document.getElementById('convertedLength').innerText = formatNumber(convertedLength);
+            document.getElementById('convertedUnit').innerText = toUnit;
+        }
+
+        function formatNumber(num) {
+            if (num % 1 === 0) {
+                return num.toString();
+            } else {
+                return num.toFixed(6).replace(/\.?0+$/, '');
+            }
+        }
+    </script>
+</body>
+</html>
