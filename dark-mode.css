@@ -1,0 +1,52 @@
+/* dark-mode.css */
+body.dark-mode {
+    background-color: #2c2c2c;
+    color: #d3d3d3;
+}
+
+body.dark-mode .container {
+    background-color: #3a3a3a;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode h1 {
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode h2 {
+    color: #fff;
+}
+
+body.dark-mode h3 {
+    color: #fff;
+}
+
+body.dark-mode .search-box input[type="text"] {
+    background-color: #4a4a4a;
+    color: #d3d3d3;
+    border-color: #555;
+}
+
+body.dark-mode .search-box input[type="text"]:focus {
+    border-color: #4caf50;
+}
+
+body.dark-mode .tools li a {
+    background-color: #4a4a4a;
+    color: #fff;
+}
+
+body.dark-mode .tools li a:hover {
+    background-color: #5a5a5a;
+}
+
+body.dark-mode .switch-version {
+    background-color: #4caf50;
+    border-color: #4caf50;
+    color: #fff;
+}
+
+body.dark-mode .switch-version:hover {
+    background-color: #45a049;
+    border-color: #45a049;
+}
