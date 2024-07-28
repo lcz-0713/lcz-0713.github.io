@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>番茄钟</title>
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -58,6 +59,23 @@
         .btn-blue:hover {
             background-color: #1e88e5;
         }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode .pomodoro {
+            font-size: 3em;
+            margin: 20px 0;
+            padding: 20px;
+            background: #333333;
+            border-radius: 10px;
+            border: 2px solid #ff4d4d;
+        }
     </style>
 </head>
 <body>
@@ -68,7 +86,7 @@
         <button class="btn-red" onclick="stopTimer()">停止</button>
         <button class="btn-blue" onclick="resetTimer()">重置</button>
     </div>
-
+    <script src="../script.js"></script>
     <script>
         let timer;
         let timeLeft = 25 * 60;
