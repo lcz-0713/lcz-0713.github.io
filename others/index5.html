@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频格式转换器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"], select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .result video {
+            width: 100%;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .download-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>视频格式转换器</h1>
+        <div class="form-group">
+            <label for="uploadVideo">上传视频:</label>
+            <input type="file" id="uploadVideo" accept="video/*">
+        </div>
+        <div class="form-group">
+            <label for="format">选择输出格式:</label>
+            <select id="format">
+                <option value="video/mp4">MP4 (.mp4)</option>
+                <option value="video/webm">WEBM (.webm)</option>
+                <option value="video/ogg">OGG (.ogg)</option>
+                <option value="video/avi">AVI (.avi)</option>
+                <option value="video/quicktime">MOV (.mov)</option>
+                <option value="video/x-matroska">MKV (.mkv)</option>
+                <option value="video/x-flv">FLV (.flv)</option>
+            </select>
+        </div>
+        <button id="convertButton">转换视频</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const uploadVideo = document.getElementById('uploadVideo');
+        const formatSelect = document.getElementById('format');
+        const convertButton = document.getElementById('convertButton');
+        const resultDiv = document.getElementById('result');
+
+        convertButton.addEventListener('click', () => {
+            const file = uploadVideo.files[0];
+            const format = formatSelect.value;
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const videoURL = URL.createObjectURL(new Blob([e.target.result], { type: file.type }));
+                    const fileName = `converted_video.${format.split('/')[1]}`;
+
+                    displayVideoAndLink(videoURL, fileName);
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                resultDiv.innerHTML = '<p>请上传视频文件。</p>';
+            }
+        });
+
+        function displayVideoAndLink(videoURL, fileName) {
+            resultDiv.innerHTML = `
+                <h2>转换后的视频:</h2>
+                <video controls>
+                    <source src="${videoURL}" type="${formatSelect.value}">
+                    您的浏览器不支持视频元素。
+                </video>
+                <a href="${videoURL}" download="${fileName}" class="download-button">下载视频</a>
+            `;
+        }
+    </script>
+</body>
+</html>

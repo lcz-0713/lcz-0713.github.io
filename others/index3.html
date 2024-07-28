@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elo 等级分计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        input, button, select {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Elo 等级分计算器</h1>
+        <input type="number" id="player1Rating" placeholder="玩家1 当前等级分" step="1">
+        <input type="number" id="player2Rating" placeholder="玩家2 当前等级分" step="1">
+        <input type="number" id="kValue" placeholder="K值" step="1">
+        <select id="matchResult">
+            <option value="1">玩家1 胜利</option>
+            <option value="0.5">平局</option>
+            <option value="0">玩家2 胜利</option>
+        </select>
+        <button onclick="calculateElo()">计算</button>
+        <div id="result" class="result hidden">
+            <p>玩家1 新等级分: <span id="newPlayer1Rating" class="highlight">0</span></p>
+            <p>玩家2 新等级分: <span id="newPlayer2Rating" class="highlight">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateElo() {
+            const player1Rating = parseFloat(document.getElementById('player1Rating').value) || 0;
+            const player2Rating = parseFloat(document.getElementById('player2Rating').value) || 0;
+            const kValue = parseFloat(document.getElementById('kValue').value) || 0;
+            const matchResult = parseFloat(document.getElementById('matchResult').value) || 0;
+
+            // 计算预期胜率
+            const expectedScorePlayer1 = 1 / (1 + Math.pow(10, (player2Rating - player1Rating) / 400));
+            const expectedScorePlayer2 = 1 / (1 + Math.pow(10, (player1Rating - player2Rating) / 400));
+
+            // 计算新的等级分
+            const newPlayer1Rating = player1Rating + kValue * (matchResult - expectedScorePlayer1);
+            const newPlayer2Rating = player2Rating + kValue * ((1 - matchResult) - expectedScorePlayer2);
+
+            // 更新结果显示
+            document.getElementById('newPlayer1Rating').textContent = newPlayer1Rating.toFixed(2);
+            document.getElementById('newPlayer2Rating').textContent = newPlayer2Rating.toFixed(2);
+
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

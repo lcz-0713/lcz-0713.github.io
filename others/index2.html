@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPS 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        button, select, input {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result, .scoreboard {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+        .highlight2 {
+            font-weight: bold;
+            color: #f44336;
+        }
+        .highlight3 {
+            font-weight: bold;
+            color: #00bcd4;
+        }
+        .hidden {
+            display: none;
+        }
+        .scoreboard {
+            background: #e0f7fa;
+            border: 2px solid #00bcd4;
+        }
+        .time-display {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 10px;
+            background: #ffe0e0;
+            border-radius: 10px;
+            border: 2px solid #f44336;
+        }
+        .history {
+            text-align: left;
+            margin: 20px 0;
+            padding: 10px;
+            background: #fff3e0;
+            border-radius: 10px;
+            border: 2px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CPS 测试</h1>
+        <p>选择测试时间并点击下面的按钮开始测试！</p>
+        <select id="timeSelect">
+            <option value="1">1秒</option>
+            <option value="2">2秒</option>
+            <option value="3">3秒</option>
+            <option value="5" selected>5秒</option>
+            <option value="10">10秒</option>
+            <option value="15">15秒</option>
+            <option value="30">30秒</option>
+            <option value="60">60秒</option>
+            <option value="custom">自定义</option>
+        </select>
+        <input id="customTime" type="number" placeholder="自定义时间 (秒)" min="1" class="hidden">
+        <button id="startButton" onclick="startTest()">开始测试</button>
+        <button id="clickButton" class="hidden" onclick="recordClick()">点击我!</button>
+        <div id="timeDisplay" class="time-display hidden">
+            剩余时间: <span id="remainingTime" class="highlight2">0.000</span> 秒<br>
+            当前速度: <span id="currentSpeed" class="highlight2">0.000</span> CPS
+        </div>
+        <div id="result" class="result hidden">
+            每秒点击次数: <span id="cpsResult" class="highlight">0.000</span>
+        </div>
+        <div id="scoreboard" class="scoreboard hidden">
+            历史最高点击次数: <span id="highScore" class="highlight3">0.000</span>
+        </div>
+        <button id="resetButton" class="hidden" onclick="resetTest()">重新测试</button>
+        <button id="clearHistoryButton" class="hidden" onclick="clearHistory()">清空历史记录</button>
+        <div id="history" class="history hidden">
+            <h2>历史记录</h2>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+
+    <script>
+        let startTime;
+        let clickCount = 0;
+        let timer;
+        let remainingTime;
+        let testDuration = 5000; // 默认5秒
+        let highScore = parseFloat(localStorage.getItem('highScore')) || 0;
+        let history = JSON.parse(localStorage.getItem('history')) || [];
+        let testStarted = false; // 标记测试是否已开始
+
+        document.getElementById('highScore').textContent = highScore.toFixed(3);
+        updateHistory();
+
+        document.getElementById('timeSelect').addEventListener('change', function() {
+            if (this.value === 'custom') {
+                document.getElementById('customTime').classList.remove('hidden');
+            } else {
+                document.getElementById('customTime').classList.add('hidden');
+                testDuration = parseInt(this.value) * 1000;
+            }
+        });
+
+        document.getElementById('customTime').addEventListener('input', function() {
+            const customTime = parseInt(this.value);
+            if (customTime && customTime > 0) {
+                testDuration = customTime * 1000;
+            }
+        });
+
+        function startTest() {
+            if (document.getElementById('timeSelect').value === 'custom') {
+                const customTime = parseInt(document.getElementById('customTime').value);
+                if (customTime && customTime > 0) {
+                    testDuration = customTime * 1000;
+                } else {
+                    alert('请输入有效的自定义时间');
+                    return;
+                }
+            }
+
+            document.getElementById('startButton').classList.add('hidden');
+            document.getElementById('clickButton').classList.remove('hidden');
+            document.getElementById('timeDisplay').classList.remove('hidden');
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('scoreboard').classList.add('hidden');
+            document.getElementById('resetButton').classList.add('hidden');
+            document.getElementById('clearHistoryButton').classList.add('hidden');
+            document.getElementById('history').classList.add('hidden');
+
+            clickCount = 0;
+            document.getElementById('cpsResult').textContent = '0.000';
+            document.getElementById('currentSpeed').textContent = '0.000';
+            document.getElementById('remainingTime').textContent = (testDuration / 1000).toFixed(3);
+
+            testStarted = false; // 重置测试开始标记
+        }
+
+        function recordClick() {
+            if (!testStarted) {
+                startTime = performance.now();
+                timer = setInterval(updateTime, 1); // 每1毫秒更新一次
+                setTimeout(endTest, testDuration);
+                testStarted = true;
+            }
+            clickCount++;
+        }
+
+        function updateTime() {
+            const currentTime = performance.now();
+            const elapsedTime = currentTime - startTime;
+            remainingTime = Math.max(0, testDuration - elapsedTime);
+            
+            const secondsElapsed = elapsedTime / 1000;
+            const cps = (clickCount / secondsElapsed).toFixed(3);
+            const timeRemaining = (remainingTime / 1000).toFixed(3);
+
+            document.getElementById('remainingTime').textContent = timeRemaining;
+            document.getElementById('currentSpeed').textContent = cps;
+        }
+
+        function endTest() {
+            clearInterval(timer);
+
+            document.getElementById('clickButton').classList.add('hidden');
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('scoreboard').classList.remove('hidden');
+            document.getElementById('resetButton').classList.remove('hidden');
+            document.getElementById('clearHistoryButton').classList.remove('hidden');
+            document.getElementById('history').classList.remove('hidden');
+
+            const endTime = performance.now();
+            const elapsedTime = (endTime - startTime) / 1000; // 秒
+            const cps = (clickCount / elapsedTime).toFixed(3);
+
+            document.getElementById('cpsResult').textContent = cps;
+
+            if (parseFloat(cps) > highScore) {
+                highScore = parseFloat(cps);
+                localStorage.setItem('highScore', highScore);
+                document.getElementById('highScore').textContent = highScore.toFixed(3);
+            }
+
+            history.push({ time: new Date().toLocaleString(), cps });
+            localStorage.setItem('history', JSON.stringify(history));
+            updateHistory();
+        }
+
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            history.forEach(entry => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `时间: ${entry.time}, CPS: ${entry.cps}`;
+                historyList.appendChild(listItem);
+            });
+        }
+
+        function clearHistory() {
+            history = [];
+            localStorage.removeItem('history');
+            updateHistory();
+        }
+
+        function resetTest() {
+            // 隐藏结果，显示开始按钮
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('scoreboard').classList.add('hidden');
+            document.getElementById('resetButton').classList.add('hidden');
+            document.getElementById('clearHistoryButton').classList.add('hidden');
+            document.getElementById('history').classList.add('hidden');
+            document.getElementById('timeDisplay').classList.add('hidden');
+            document.getElementById('startButton').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
