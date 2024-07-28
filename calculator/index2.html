@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科学计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .calculator {
+            display: grid;
+            gap: 10px;
+        }
+        .calculator input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.2em;
+            text-align: right;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .calculator button {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+        }
+        .calculator button:hover {
+            background-color: #358438;
+        }
+        .result {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .instructions {
+            margin-top: 20px;
+        }
+        .instructions ul {
+            padding-left: 20px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>科学计算器</h1>
+        <div class="calculator">
+            <input type="text" id="expression" placeholder="输入计算表达式">
+            <button onclick="calculate()">计算</button>
+            <div id="result" class="result">
+                <p>结果: <span id="totalReturn" class="highlight">0</span></p>
+            </div>
+        </div>
+        <div class="instructions">
+            <h2>使用说明</h2>
+            <p>请输入数学表达式，然后点击“计算”按钮。支持的功能如下：</p>
+            <ul>
+                <li>基本运算: +, -, *, /</li>
+                <li>百分数: % (例如: 50%)</li>
+                <li>π: pi (例如: 2 * pi)</li>
+                <li>向上取整: ceil(x)</li>
+                <li>向下取整: floor(x)</li>
+                <li>四舍五入: round(x)</li>
+                <li>对数: log(x), ln(x) (例如: log10, ln2)</li>
+                <li>取模: mod(a, b)</li>
+                <li>绝对值: abs(x)</li>
+                <li>阶乘: fact(n) (例如: fact(5))</li>
+                <li>平方根: sqrt(x)</li>
+                <li>幂: pow(x, y) (例如: pow(2, 3))</li>
+                <li>三角函数: sin(x), cos(x), tan(x)</li>
+                <li>反三角函数: asin(x), acos(x), atan(x)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function factorial(n) {
+            if (n < 0) return 'Error';
+            if (n === 0) return 1;
+            return n * factorial(n - 1);
+        }
+
+        function mod(a, b) {
+            return a % b;
+        }
+
+        function calculate() {
+            const expression = document.getElementById('expression').value;
+            try {
+                const safeExpression = expression
+                    .replace(/pi/g, 'Math.PI')
+                    .replace(/ceil/g, 'Math.ceil')
+                    .replace(/floor/g, 'Math.floor')
+                    .replace(/round/g, 'Math.round')
+                    .replace(/log/g, 'Math.log10')
+                    .replace(/ln/g, 'Math.log')
+                    .replace(/mod/g, 'mod')
+                    .replace(/abs/g, 'Math.abs')
+                    .replace(/fact/g, 'factorial')
+                    .replace(/sqrt/g, 'Math.sqrt')
+                    .replace(/pow/g, 'Math.pow')
+                    .replace(/sin/g, 'Math.sin')
+                    .replace(/cos/g, 'Math.cos')
+                    .replace(/tan/g, 'Math.tan')
+                    .replace(/asin/g, 'Math.asin')
+                    .replace(/acos/g, 'Math.acos')
+                    .replace(/atan/g, 'Math.atan');
+
+                const result = new Function(`return ${safeExpression}`)();
+                document.getElementById('totalReturn').innerText = `${result}`;
+            } catch (error) {
+                document.getElementById('totalReturn').innerText = 'Error';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款/抵押计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .result p {
+            margin: 10px 0;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>贷款/抵押计算器</h1>
+        <input type="number" id="loanAmount" placeholder="贷款金额">
+        <input type="number" id="interestRate" placeholder="年利率 (%)">
+        <input type="number" id="loanTerm" placeholder="贷款年限">
+        <button onclick="calculateLoan()">计算</button>
+        <div id="result" class="result">
+            <p>每月还款金额: <span id="monthlyPayment" class="highlight">0.00</span></p>
+            <p>总还款金额: <span id="totalPayment" class="highlight">0.00</span></p>
+            <p>总利息: <span id="totalInterest" class="highlight">0.00</span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateLoan() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
+            const annualInterestRate = parseFloat(document.getElementById('interestRate').value) / 100 || 0;
+            const loanTerm = parseInt(document.getElementById('loanTerm').value) || 0;
+
+            const monthlyInterestRate = annualInterestRate / 12;
+            const numberOfPayments = loanTerm * 12;
+
+            const monthlyPayment = loanAmount * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) /
+                (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
+
+            const totalPayment = monthlyPayment * numberOfPayments;
+            const totalInterest = totalPayment - loanAmount;
+
+            document.getElementById('monthlyPayment').textContent = isNaN(monthlyPayment) ? '0.00' : monthlyPayment.toFixed(2);
+            document.getElementById('totalPayment').textContent = isNaN(totalPayment) ? '0.00' : totalPayment.toFixed(2);
+            document.getElementById('totalInterest').textContent = isNaN(totalInterest) ? '0.00' : totalInterest.toFixed(2);
+        }
+    </script>
+</body>
+</html>
