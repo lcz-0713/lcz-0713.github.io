@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>序列号生成器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group div {
+            flex: 1;
+            min-width: 150px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .button-container button {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        .generate-button {
+            background-color: #4caf50;
+        }
+        .generate-button:hover {
+            background-color: #45a049;
+        }
+        .download-button {
+            background-color: #007bff;
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            text-align: left;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .result-item {
+            font-size: 1.2em;
+            margin: 5px 0;
+            padding: 5px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            display: block;
+        }
+        .instruction {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>序列号生成器</h1>
+        <p class="instruction">
+            使用说明：填写前缀、开始编号、结束编号、步长、对齐长度和后缀。前缀会添加到每个序列号的开始部分。步长定义了两个序列号之间的间隔。对齐长度定义了序列号的长度，短于该长度的编号将会在前面填充零。后缀会添加到每个序列号的结尾部分。例如，前缀为"SN-"，开始编号为1，结束编号为10，步长为2，对齐长度为4，后缀为"-END"，生成的序列号将是"SN-0001-END", "SN-0003-END", "SN-0005-END"等。
+        </p>
+        <div class="form-group">
+            <div>
+                <label for="prefix">前缀:</label>
+                <input type="text" id="prefix" placeholder="前缀">
+            </div>
+            <div>
+                <label for="start">开始编号:</label>
+                <input type="number" id="start" placeholder="开始编号" value="1">
+            </div>
+            <div>
+                <label for="end">结束编号:</label>
+                <input type="number" id="end" placeholder="结束编号" value="100">
+            </div>
+            <div>
+                <label for="step">步长:</label>
+                <input type="number" id="step" placeholder="步长" value="1">
+            </div>
+            <div>
+                <label for="align">对齐长度:</label>
+                <input type="number" id="align" placeholder="对齐长度" value="4">
+            </div>
+            <div>
+                <label for="suffix">后缀:</label>
+                <input type="text" id="suffix" placeholder="后缀">
+            </div>
+        </div>
+        <div class="button-container">
+            <button class="generate-button" onclick="generateSerialNumbers()">生成序列号</button>
+            <button class="download-button" onclick="downloadSerialNumbers()">下载序列号</button>
+        </div>
+        <div id="serialNumberResult" class="result"></div>
+    </div>
+
+    <script>
+        function generateSerialNumbers() {
+            const prefix = document.getElementById('prefix').value;
+            const start = parseInt(document.getElementById('start').value);
+            const end = parseInt(document.getElementById('end').value);
+            const step = parseInt(document.getElementById('step').value);
+            const align = parseInt(document.getElementById('align').value);
+            const suffix = document.getElementById('suffix').value;
+            const resultDiv = document.getElementById('serialNumberResult');
+
+            if (isNaN(start) || isNaN(end) || isNaN(step) || isNaN(align) || step <= 0 || end < start || align <= 0) {
+                resultDiv.innerHTML = '请输入有效的参数';
+                return;
+            }
+
+            let results = [];
+            for (let i = start; i <= end; i += step) {
+                let numberStr = i.toString().padStart(align, '0');
+                results.push(prefix + numberStr + suffix);
+            }
+
+            resultDiv.innerHTML = results.map(result => `<span class="result-item">${result}</span>`).join('');
+        }
+
+        function downloadSerialNumbers() {
+            const resultDiv = document.getElementById('serialNumberResult');
+            const results = Array.from(resultDiv.querySelectorAll('.result-item')).map(item => item.textContent);
+            const data = results.join('\n');
+            const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'serial_numbers.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
