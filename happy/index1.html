@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>随机数生成器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -124,6 +125,29 @@
             font-size: 1.5em;
             font-weight: bold
         }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result{
+            background-color: #2c2c2c;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -180,7 +204,7 @@
             <a href="random/index2.html">序列号生成器</a>
         </div>
     </div>
-
+    <script src="../script.js"></script>
     <script>
         function generateRandom() {
             const type = document.getElementById('type').value;
