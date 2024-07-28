@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>科学计算器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,6 +70,15 @@
             font-weight: bold;
             color: #4caf50;
         }
+        body.dark-mode .calculator input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
     </style>
 </head>
 <body>
@@ -102,7 +112,7 @@
             </ul>
         </div>
     </div>
-
+    <script src="../script.js"></script>
     <script>
         function factorial(n) {
             if (n < 0) return 'Error';

@@ -4,15 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>标准计算器</title>
+    <!-- <link rel="stylesheet" href="../styles.css"> -->
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
         .container {
             max-width: 300px;
             margin: 20px auto;
@@ -68,6 +62,47 @@
         .calculator button.equals:hover {
             background-color: #45a049;
         }
+        
+        body.dark-mode .container {
+            background-color: #3a3a3a;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .calculator input {
+            background-color: #5a5a5a;
+            color: #fff;
+            border-color: #666;
+        }
+
+        body.dark-mode .calculator button {
+            background-color: #4a4a4a;
+            border-color: #666;
+            color: #fff;
+        }
+
+        body.dark-mode .calculator button.operator {
+            background-color: #666;
+        }
+
+        body.dark-mode .calculator button.clear {
+            background-color: #cc4444;
+        }
+
+        body.dark-mode .calculator button.equals {
+            background-color: #4caf50;
+        }
+
+        body.dark-mode .calculator button:hover {
+            background-color: #666;
+        }
+
+        body.dark-mode .calculator button.clear:hover {
+            background-color: #b33c3c;
+        }
+
+        body.dark-mode .calculator button.equals:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -93,8 +128,10 @@
             <button onclick="appendToDisplay('.')">.</button>
             <button onclick="appendToDisplay('0')">0</button>
         </div>
+        
     </div>
 
+    <script src="../script.js"></script>
     <script>
         function appendToDisplay(value) {
             document.getElementById('display').value += value;
@@ -128,4 +165,3 @@
     </script>
 </body>
 </html>
-
