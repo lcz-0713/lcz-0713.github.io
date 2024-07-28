@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密码强度检查器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px; /* 调窄宽度 */
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            text-align: center;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .strength {
+            font-weight: bold;
+            font-size: 1.5em; /* 增加字体大小 */
+        }
+        .weak {
+            color: red;
+        }
+        .medium {
+            color: orange;
+        }
+        .strong {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>密码强度检查器</h1>
+        <div class="form-group">
+            <label for="password">请输入密码:</label>
+            <input type="password" id="password" placeholder="输入密码">
+        </div>
+        <button onclick="checkPasswordStrength()">检查强度</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!password) {
+                resultDiv.innerText = '请输入密码';
+                return;
+            }
+
+            let strength = '弱';
+            let colorClass = 'weak';
+
+            if (isCommonPassword(password)) {
+                strength = '弱';
+                colorClass = 'weak';
+            } else if (isPattern(password)) {
+                strength = '弱';
+                colorClass = 'weak';
+            } else if (password.length >= 12 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) {
+                strength = '强';
+                colorClass = 'strong';
+            } else if (password.length >= 8) {
+                strength = '中等';
+                colorClass = 'medium';
+            }
+
+            resultDiv.innerHTML = `
+                <p><span class="strength ${colorClass}">密码强度: ${strength}</span></p>
+            `;
+        }
+
+        function isCommonPassword(password) {
+            const commonPasswords = [
+                '123456', 'password', '123456789', '12345678', '12345', '1234567',
+                'qwerty', 'abc123', 'password1', '123123', 'admin', 'letmein', 
+                'welcome', 'monkey', '1234', 'sunshine', '123123', 'qwertyuiop'
+            ];
+            return commonPasswords.includes(password.toLowerCase());
+        }
+
+        function isPattern(password) {
+            const patterns = [
+                /^(123456|password|123456789|12345678|12345|1234567|qwerty|abc123|password1|123123|admin|letmein|welcome|monkey|1234|sunshine|123123|qwertyuiop)$/i,
+                /^(\d+|[a-z]+|[A-Z]+)$/ // Simple patterns: only digits, only lowercase or uppercase letters
+            ];
+            return patterns.some(pattern => pattern.test(password));
+        }
+    </script>
+</body>
+</html>
