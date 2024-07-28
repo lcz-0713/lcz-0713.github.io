@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片取色器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .upload-container input {
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+        .image-container {
+            position: relative;
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            cursor: crosshair;
+        }
+        .color-info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .color-info div {
+            margin-bottom: 10px;
+        }
+        .color-box {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .color-code {
+            font-weight: bold;
+        }
+        .instructions {
+            margin-top: 20px;
+        }
+        .instructions ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>图片取色器</h1>
+        <div class="upload-container">
+            <input type="file" id="image-upload" accept="image/*">
+            <div class="image-container">
+                <img id="image" src="" alt="上传的图片">
+            </div>
+            <div class="color-info" id="color-info">
+                <div>
+                    <div id="color-box" class="color-box"></div>
+                    <span id="color-code" class="color-code">选择颜色</span>
+                </div>
+                <div>
+                    <span id="rgb-code">RGB: </span>
+                </div>
+                <div>
+                    <span id="hsl-code">HSL: </span>
+                </div>
+            </div>
+        </div>
+        <div class="instructions">
+            <h2>使用说明</h2>
+            <p>上传一张图片，点击图片以获取颜色值，显示在下面的颜色展示区域。</p>
+            <ul>
+                <li>上传图片</li>
+                <li>点击图片以获取颜色</li>
+                <li>显示 HEX、RGB 和 HSL 颜色值</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('image-upload');
+        const image = document.getElementById('image');
+        const colorInfo = document.getElementById('color-info');
+        const colorBox = document.getElementById('color-box');
+        const colorCode = document.getElementById('color-code');
+        const rgbCode = document.getElementById('rgb-code');
+        const hslCode = document.getElementById('hsl-code');
+
+        let imgElement = null;
+
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        image.addEventListener('load', function() {
+            imgElement = image;
+        });
+
+        image.addEventListener('click', function(event) {
+            if (!imgElement) return;
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const rect = imgElement.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            canvas.width = imgElement.naturalWidth;
+            canvas.height = imgElement.naturalHeight;
+            context.drawImage(imgElement, 0, 0);
+            const pixel = context.getImageData(x * (canvas.width / rect.width), y * (canvas.height / rect.height), 1, 1).data;
+            const rgb = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+            const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+            const hsl = rgbToHsl(pixel[0], pixel[1], pixel[2]);
+
+            colorBox.style.backgroundColor = hex;
+            colorCode.textContent = `HEX: ${hex}`;
+            rgbCode.textContent = `RGB: ${rgb}`;
+            hslCode.textContent = `HSL: ${hsl}`;
+        });
+
+        function rgbToHex(r, g, b) {
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            let max = Math.max(r, g, b);
+            let min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if (max === min) {
+                h = s = 0; // achromatic
+            } else {
+                let d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+
+            h = Math.round(h * 360);
+            s = Math.round(s * 100);
+            l = Math.round(l * 100);
+            return `hsl(${h}, ${s}%, ${l}%)`;
+        }
+    </script>
+</body>
+</html>
