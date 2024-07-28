@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>温度转换工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>温度转换工具</h1>
+        <div class="form-group">
+            <label for="temperature">输入温度:</label>
+            <input type="number" id="temperature" placeholder="请输入温度" step="0.01">
+        </div>
+        <div class="form-group">
+            <label for="fromUnit">从:</label>
+            <select id="fromUnit">
+                <option value="°C">摄氏度 (°C)</option>
+                <option value="°F">华氏度 (°F)</option>
+                <option value="K">开尔文 (K)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="toUnit">到:</label>
+            <select id="toUnit">
+                <option value="°C">摄氏度 (°C)</option>
+                <option value="°F">华氏度 (°F)</option>
+                <option value="K">开尔文 (K)</option>
+            </select>
+        </div>
+        <button onclick="convertTemperature()">转换</button>
+        <div id="result" class="result">
+            <p>结果: <span id="convertedTemperature" class="highlight">0</span> <span id="convertedUnit" class="highlight">单位</span></p>
+        </div>
+    </div>
+
+    <script>
+        function convertTemperature() {
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+
+            if (isNaN(temperature)) {
+                document.getElementById('convertedTemperature').innerText = '错误的输入';
+                document.getElementById('convertedUnit').innerText = '';
+                return;
+            }
+
+            let tempInCelsius;
+
+            // Convert input to Celsius
+            switch (fromUnit) {
+                case '°F':
+                    tempInCelsius = (temperature - 32) * 5 / 9;
+                    break;
+                case 'K':
+                    tempInCelsius = temperature - 273.15;
+                    break;
+                case '°C':
+                default:
+                    tempInCelsius = temperature;
+                    break;
+            }
+
+            let convertedTemperature;
+
+            // Convert Celsius to target unit
+            switch (toUnit) {
+                case '°F':
+                    convertedTemperature = tempInCelsius * 9 / 5 + 32;
+                    break;
+                case 'K':
+                    convertedTemperature = tempInCelsius + 273.15;
+                    break;
+                case '°C':
+                default:
+                    convertedTemperature = tempInCelsius;
+                    break;
+            }
+
+            // Format result
+            document.getElementById('convertedTemperature').innerText = formatNumber(convertedTemperature);
+            document.getElementById('convertedUnit').innerText = toUnit;
+        }
+
+        function formatNumber(num) {
+            if (num % 1 === 0) {
+                return num.toString();
+            } else {
+                return num.toFixed(2).replace(/\.?0+$/, '');
+            }
+        }
+    </script>
+</body>
+</html>
