@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倒计时器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 300px; /* 调窄容器宽度 */
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: calc(100% - 22px); /* 调整宽度以适应容器 */
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between; /* 按钮分布在同一行 */
+            flex-wrap: wrap; /* 按钮换行显示 */
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            flex: 1 1 30%; /* 按钮宽度调整 */
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .btn-red {
+            background-color: #ff4d4d;
+        }
+        .btn-red:hover {
+            background-color: #e60000;
+        }
+        .result {
+            font-size: 2em;
+            margin: 20px 0;
+            padding: 20px;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>倒计时器</h1>
+        <input type="number" id="hours" placeholder="小时" min="0">
+        <input type="number" id="minutes" placeholder="分钟" min="0">
+        <input type="number" id="seconds" placeholder="秒" min="0">
+        <div class="button-group">
+            <button onclick="startTimer()">开始</button>
+            <button class="btn-red" onclick="stopTimer()">停止</button>
+            <button onclick="resetTimer()">重置</button>
+        </div>
+        <div id="result" class="result">00:00:00</div>
+    </div>
+
+    <audio id="alarm" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <script>
+        let timer;
+        let timeLeft = 0;
+
+        function updateDisplay() {
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('result').innerText =
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            const hours = parseInt(document.getElementById('hours').value) || 0;
+            const minutes = parseInt(document.getElementById('minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+            timeLeft = hours * 3600 + minutes * 60 + seconds;
+
+            if (timer) clearInterval(timer);
+            timer = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('alarm').play();
+                    notifyUser('时间到!');
+                    return;
+                }
+                timeLeft--;
+                updateDisplay();
+            }, 1000);
+            updateDisplay();
+        }
+
+        function stopTimer() {
+            clearInterval(timer);
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 0;
+            document.getElementById('hours').value = '';
+            document.getElementById('minutes').value = '';
+            document.getElementById('seconds').value = '';
+            updateDisplay();
+        }
+
+        function notifyUser(message) {
+            if (window.Notification && Notification.permission === "granted") {
+                new Notification(message);
+            } else if (window.Notification && Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification(message);
+                    }
+                });
+            } else {
+                alert(message);
+            }
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
