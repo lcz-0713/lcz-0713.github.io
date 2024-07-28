@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>重量转换工具</title>
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,6 +69,20 @@
             font-weight: bold;
             color: #4caf50;
         }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
     </style>
 </head>
 <body>
@@ -102,6 +117,7 @@
             <p>结果: <span id="convertedWeight" class="highlight">0</span> <span id="convertedUnit" class="highlight">单位</span></p>
         </div>
     </div>
+    <script src="../script.js"></script>
 
     <script>
         function convertWeight() {
