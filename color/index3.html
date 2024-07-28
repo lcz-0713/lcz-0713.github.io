@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>调色板生成器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -79,6 +80,20 @@
         .instructions ul {
             padding-left: 20px;
         }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
     </style>
 </head>
 <body>
@@ -94,7 +109,7 @@
             <p>输入要生成的颜色数量，然后点击“生成调色板”按钮，生成一个包含指定数量颜色的调色板。</p>
         </div>
     </div>
-
+    <script src="../script.js"></script>
     <script>
         function generatePalette() {
             const numberOfColors = document.getElementById('number-of-colors').value;

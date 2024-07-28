@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>色码转换器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,6 +57,20 @@
         .instructions ul {
             padding-left: 20px;
         }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
     </style>
 </head>
 <body>
@@ -78,7 +93,7 @@
             </ul>
         </div>
     </div>
-
+    <script src="../script.js"></script>
     <script>
         function convertColor() {
             const input = document.getElementById('input-color').value.trim();
