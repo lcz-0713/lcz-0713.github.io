@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码生成器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .button-container button {
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        .generate-button {
+            background-color: #4caf50; /* 绿色 */
+        }
+        .generate-button:hover {
+            background-color: #45a049;
+        }
+        .download-button {
+            background-color: #007bff; /* 蓝色 */
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .result canvas {
+            margin-bottom: 10px;
+        }
+        .link-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .link-container a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+        .link-container a:hover {
+            background: #0056b3;
+        }
+        .color-preview {
+            width: 100%;
+            height: 30px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+            background-color: #000000; /* 初始颜色为黑色 */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>二维码生成器</h1>
+        <div class="form-group">
+            <label for="text">请输入文本内容:</label>
+            <textarea id="text" placeholder="输入要生成二维码的文本"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="size">二维码尺寸:</label>
+            <input type="number" id="size" placeholder="例如: 200" value="200">
+        </div>
+        <div class="form-group">
+            <label for="color">二维码颜色:</label>
+            <input type="color" id="color" value="#000000" oninput="updateColorPreview()">
+            <div id="color-preview" class="color-preview"></div>
+        </div>
+        <div class="button-container">
+            <button class="generate-button" onclick="generateQRCode()">生成二维码</button>
+            <button class="download-button" onclick="downloadQRCode()">下载二维码</button>
+        </div>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function generateQRCode() {
+            const text = document.getElementById('text').value;
+            const size = parseInt(document.getElementById('size').value);
+            const color = document.getElementById('color').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+            if (text.trim() === '' || isNaN(size) || size <= 0) {
+                resultDiv.textContent = '请输入有效的文本内容和尺寸!';
+                return;
+            }
+            QRCode.toCanvas(document.createElement('canvas'), text, {
+                width: size,
+                color: {
+                    dark: color,
+                    light: '#FFFFFF'
+                }
+            }, function (error, canvas) {
+                if (error) console.error(error);
+                resultDiv.appendChild(canvas);
+            });
+        }
+
+        function downloadQRCode() {
+            const resultDiv = document.getElementById('result');
+            if (resultDiv.children.length === 0) {
+                alert('请先生成二维码!');
+                return;
+            }
+            const canvas = resultDiv.querySelector('canvas');
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL();
+            link.download = 'qrcode.png';
+            link.click();
+        }
+
+        function updateColorPreview() {
+            const color = document.getElementById('color').value;
+            const colorPreview = document.getElementById('color-preview');
+            colorPreview.style.backgroundColor = color;
+        }
+    </script>
+</body>
+</html>

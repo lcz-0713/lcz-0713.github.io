@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜数字游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>猜数字游戏</h1>
+        <p>我已选一个1到100之间的数字。请猜一下是什么。</p>
+        <input type="number" id="guessInput" placeholder="输入你的猜测" min="1" max="100">
+        <button onclick="makeGuess()">提交猜测</button>
+        <div id="gameResult" class="result"></div>
+    </div>
+
+    <script>
+        let targetNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+
+        function makeGuess() {
+            const guess = parseInt(document.getElementById('guessInput').value);
+            const resultDiv = document.getElementById('gameResult');
+            attempts++;
+
+            if (isNaN(guess)) {
+                resultDiv.textContent = '请输入一个有效的数字！';
+            } else if (guess < targetNumber) {
+                resultDiv.textContent = '太低了！再试一次。';
+            } else if (guess > targetNumber) {
+                resultDiv.textContent = '太高了！再试一次。';
+            } else {
+                resultDiv.textContent = `恭喜你！正确答案是 ${targetNumber}。你总共猜了 ${attempts} 次。`;
+                targetNumber = Math.floor(Math.random() * 100) + 1; // 重新开始
+                attempts = 0;
+            }
+        }
+    </script>
+</body>
+</html>

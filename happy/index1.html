@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机数生成器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px; /* 窄一点 */
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group div {
+            flex: 1;
+            min-width: 150px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+        .button-container button {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        .generate-button {
+            background-color: #4caf50; /* 绿色 */
+        }
+        .generate-button:hover {
+            background-color: #45a049;
+        }
+        .download-button {
+            background-color: #007bff; /* 蓝色 */
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .result-item {
+            font-size: 1.5em;
+            margin: 0;
+            padding: 5px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        .color-box {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .link-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .link-container a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+        .link-container a:hover {
+            background: #0056b3;
+        }
+        .info-text {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>随机数生成器</h1>
+        <div class="form-group">
+            <div>
+                <label for="type">选择生成类型:</label>
+                <select id="type">
+                    <option value="integer">整数</option>
+                    <option value="float">浮点数</option>
+                    <option value="color">颜色</option>
+                </select>
+            </div>
+            <div>
+                <label for="min">最小值:</label>
+                <input type="number" id="min" placeholder="最小值" value="0">
+            </div>
+            <div>
+                <label for="max">最大值:</label>
+                <input type="number" id="max" placeholder="最大值" value="100">
+            </div>
+            <div>
+                <label for="count">生成数量:</label>
+                <input type="number" id="count" placeholder="生成数量" value="1">
+            </div>
+        </div>
+        <div class="form-group">
+            <div>
+                <label for="unique">唯一值:</label>
+                <select id="unique">
+                    <option value="true">是</option>
+                    <option value="false">否</option>
+                </select>
+            </div>
+            <div>
+                <label for="sort">排序方式:</label>
+                <select id="sort">
+                    <option value="none">无序</option>
+                    <option value="asc">升序</option>
+                    <option value="desc">降序</option>
+                </select>
+            </div>
+        </div>
+        <div class="button-container">
+            <button class="generate-button" onclick="generateRandom()">生成随机数</button>
+            <button class="download-button" onclick="downloadResult()">下载结果</button>
+        </div>
+        <div id="result" class="result"></div>
+        <br>
+        <div class="info-text">其它随机数工具</div>
+        <div class="link-container">
+            <a href="random/index1.html">随机密码生成器</a>
+            <a href="random/index2.html">序列号生成器</a>
+        </div>
+    </div>
+
+    <script>
+        function generateRandom() {
+            const type = document.getElementById('type').value;
+            const min = parseFloat(document.getElementById('min').value);
+            const max = parseFloat(document.getElementById('max').value);
+            const count = parseInt(document.getElementById('count').value);
+            const unique = document.getElementById('unique').value === 'true';
+            const sort = document.getElementById('sort').value;
+            const resultDiv = document.getElementById('result');
+
+            if (isNaN(min) || isNaN(max) || isNaN(count) || count <= 0) {
+                resultDiv.innerHTML = '请输入有效的参数';
+                return;
+            }
+
+            let results = [];
+            let resultSet = new Set();
+
+            for (let i = 0; i < count; i++) {
+                let result;
+                do {
+                    if (type === 'integer') {
+                        result = Math.floor(Math.random() * (max - min + 1)) + min;
+                    } else if (type === 'float') {
+                        result = (Math.random() * (max - min) + min).toFixed(2);
+                    } else if (type === 'color') {
+                        result = generateRandomColor();
+                    }
+                } while (unique && resultSet.has(result));
+                resultSet.add(result);
+                results.push(result);
+            }
+
+            if (sort === 'asc') results.sort((a, b) => a - b);
+            if (sort === 'desc') results.sort((a, b) => b - a);
+
+            resultDiv.innerHTML = results.map(result => {
+                if (type === 'color') {
+                    return `<div class="result-item"><div class="color-box" style="background-color: ${result};"></div><p>${result}</p></div>`;
+                } else {
+                    return `<div class="result-item">${result}</div>`;
+                }
+            }).join('');
+        }
+
+        function generateRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r},${g},${b})`;
+        }
+
+        function downloadResult() {
+            const resultDiv = document.getElementById('result');
+            const results = Array.from(resultDiv.querySelectorAll('.result-item')).map(item => item.textContent);
+            const data = results.join('\n');
+            const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'results.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
