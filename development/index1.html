@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON 格式化器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #45a050;
+        }
+        .result {
+            white-space: pre-wrap;
+            padding: 10px;
+            background-color: #e0ffe0;
+            border: 2px solid #45a050;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JSON 格式化器</h1>
+        <textarea id="json-input" placeholder="输入或粘贴 JSON 数据..."></textarea>
+        <button onclick="formatJson()">格式化 JSON</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function formatJson() {
+            const jsonInput = document.getElementById('json-input').value;
+            try {
+                const jsonObject = JSON.parse(jsonInput);
+                const formattedJson = JSON.stringify(jsonObject, null, 4);
+                document.getElementById('result').textContent = formattedJson;
+            } catch (error) {
+                document.getElementById('result').textContent = 'JSON 格式错误';
+            }
+        }
+    </script>
+</body>
+</html>
