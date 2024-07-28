@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP 请求模拟器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        select, input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            white-space: pre-wrap;
+            padding: 10px;
+            border: 2px solid #4caf50;
+            border-radius: 5px;
+            font-family: monospace;
+            background-color: #e0ffe0;
+            margin-top: 20px;
+        }
+        .label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HTTP 请求模拟器</h1>
+        <select id="method">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+        </select>
+        <input type="text" id="url" placeholder="输入请求 URL">
+        <textarea id="params" placeholder="输入请求参数（仅用于 POST 请求）"></textarea>
+        <button onclick="sendRequest()">发送请求</button>
+        <div id="result" class="result">响应结果将在此处显示</div>
+    </div>
+
+    <script>
+        function sendRequest() {
+            const method = document.getElementById('method').value;
+            const url = document.getElementById('url').value;
+            const params = document.getElementById('params').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!url) {
+                resultDiv.innerText = '请输入有效的 URL。';
+                return;
+            }
+
+            let options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            if (method === 'POST') {
+                options.body = params;
+            }
+
+            fetch(url, options)
+                .then(response => response.text())
+                .then(data => {
+                    resultDiv.innerText = `响应内容:\n${data}`;
+                })
+                .catch(error => {
+                    resultDiv.innerText = `请求失败: ${error}`;
+                });
+        }
+    </script>
+</body>
+</html>
