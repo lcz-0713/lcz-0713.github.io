@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频解析工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1em;
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .result img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>视频解析工具</h1>
+        <input type="text" id="videoURL" placeholder="输入视频链接">
+        <button onclick="parseVideo()">解析视频</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function parseVideo() {
+            const videoURL = document.getElementById('videoURL').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!videoURL) {
+                resultDiv.innerHTML = '<p class="error">请输入有效的视频链接。</p>';
+                return;
+            }
+
+            // 这里可以根据需要添加对不同视频平台链接的解析逻辑
+            // 例如 YouTube、Vimeo 等等
+            const videoId = extractVideoId(videoURL);
+
+            if (!videoId) {
+                resultDiv.innerHTML = '<p class="error">无法解析视频链接。</p>';
+                return;
+            }
+
+            // 示例：假设是 YouTube 视频
+            const videoInfo = {
+                title: "示例视频标题",
+                description: "这是一个示例视频的描述。",
+                thumbnail: "https://via.placeholder.com/480x360?text=Video+Thumbnail",
+                url: `https://www.youtube.com/watch?v=${videoId}`
+            };
+
+            resultDiv.innerHTML = `
+                <h2>${videoInfo.title}</h2>
+                <img src="${videoInfo.thumbnail}" alt="Video Thumbnail">
+                <p>${videoInfo.description}</p>
+                <p><a href="${videoInfo.url}" target="_blank">观看视频</a></p>
+            `;
+        }
+
+        function extractVideoId(url) {
+            const urlParams = new URLSearchParams(new URL(url).search);
+            return urlParams.get('v');
+        }
+    </script>
+</body>
+</html>

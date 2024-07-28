@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心率计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>心率计算器</h1>
+        <div class="form-group">
+            <label for="age">年龄 (岁):</label>
+            <input type="number" id="age" placeholder="请输入年龄">
+        </div>
+        <div class="form-group">
+            <label for="restingHeartRate">静息心率 (bpm):</label>
+            <input type="number" id="restingHeartRate" placeholder="请输入静息心率">
+        </div>
+        <div class="form-group">
+            <label for="activity">活动水平:</label>
+            <select id="activity">
+                <option value="sedentary">久坐</option>
+                <option value="light">轻度活动</option>
+                <option value="moderate">中度活动</option>
+                <option value="active">高度活动</option>
+            </select>
+        </div>
+        <button onclick="calculateHeartRate()">计算心率</button>
+        <div id="result" class="result">
+            <p>目标心率区间: <span id="totalReturn" class="highlight">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateHeartRate() {
+            const age = parseInt(document.getElementById('age').value);
+            const restingHeartRate = parseInt(document.getElementById('restingHeartRate').value);
+            const activityLevel = document.getElementById('activity').value;
+
+            if (isNaN(age) || isNaN(restingHeartRate)) {
+                document.getElementById('totalReturn').innerText = '错误的输入';
+                return;
+            }
+
+            const maxHeartRate = 220 - age;
+            let targetHeartRate;
+
+            switch (activityLevel) {
+                case 'sedentary':
+                    targetHeartRate = [0.5, 0.6];
+                    break;
+                case 'light':
+                    targetHeartRate = [0.6, 0.7];
+                    break;
+                case 'moderate':
+                    targetHeartRate = [0.7, 0.8];
+                    break;
+                case 'active':
+                    targetHeartRate = [0.8, 0.85];
+                    break;
+                default:
+                    targetHeartRate = [0, 0];
+            }
+
+            const lowerBound = Math.round(targetHeartRate[0] * (maxHeartRate - restingHeartRate) + restingHeartRate);
+            const upperBound = Math.round(targetHeartRate[1] * (maxHeartRate - restingHeartRate) + restingHeartRate);
+
+            document.getElementById('totalReturn').innerText = `${lowerBound} - ${upperBound} bpm`;
+        }
+    </script>
+</body>
+</html>

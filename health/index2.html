@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日卡路里需求计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>每日卡路里需求计算器</h1>
+        <div class="form-group">
+            <label for="age">年龄 (岁):</label>
+            <input type="number" id="age" placeholder="请输入年龄">
+        </div>
+        <div class="form-group">
+            <label for="weight">体重 (kg):</label>
+            <input type="number" id="weight" placeholder="请输入体重" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="height">身高 (cm):</label>
+            <input type="number" id="height" placeholder="请输入身高" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="gender">性别:</label>
+            <select id="gender">
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="activity">活动水平:</label>
+            <select id="activity">
+                <option value="sedentary">久坐</option>
+                <option value="light">轻度活动</option>
+                <option value="moderate">中度活动</option>
+                <option value="active">高度活动</option>
+            </select>
+        </div>
+        <button onclick="calculateCalories()">计算卡路里</button>
+        <div id="result" class="result">
+            <p>每日卡路里需求: <span id="totalReturn" class="highlight">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateCalories() {
+            const age = parseInt(document.getElementById('age').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const gender = document.getElementById('gender').value;
+            const activity = document.getElementById('activity').value;
+
+            if (isNaN(age) || isNaN(weight) || isNaN(height)) {
+                document.getElementById('totalReturn').innerText = '错误的输入';
+                return;
+            }
+
+            let bmr;
+            if (gender === 'male') {
+                bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+            } else {
+                bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+            }
+
+            const activityLevels = {
+                sedentary: 1.2,
+                light: 1.375,
+                moderate: 1.55,
+                active: 1.725
+            };
+
+            const calorieNeeds = bmr * activityLevels[activity];
+            document.getElementById('totalReturn').innerText = `${calorieNeeds.toFixed(0)} 卡路里`;
+        }
+    </script>
+</body>
+</html>
