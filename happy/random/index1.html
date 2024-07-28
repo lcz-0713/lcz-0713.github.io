@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机密码生成器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group div {
+            flex: 1;
+            min-width: 150px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .button-container button {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+        .generate-button {
+            background-color: #4caf50;
+        }
+        .generate-button:hover {
+            background-color: #45a049;
+        }
+        .download-button {
+            background-color: #007bff;
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            text-align: center;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>随机密码生成器</h1>
+        <div class="form-group">
+            <div>
+                <label for="quantity">密码数量:</label>
+                <input type="number" id="quantity" placeholder="生成数量" value="5">
+            </div>
+            <div>
+                <label for="length">密码长度:</label>
+                <input type="number" id="length" placeholder="密码长度" value="12">
+            </div>
+            <div>
+                <label for="includeSpecial">包含特殊字符:</label>
+                <input type="checkbox" id="includeSpecial" checked>
+            </div>
+            <div>
+                <label for="includeNumbers">包含数字:</label>
+                <input type="checkbox" id="includeNumbers" checked>
+            </div>
+            <div>
+                <label for="includeUpper">包含大写字母:</label>
+                <input type="checkbox" id="includeUpper" checked>
+            </div>
+            <div>
+                <label for="includeLower">包含小写字母:</label>
+                <input type="checkbox" id="includeLower" checked>
+            </div>
+        </div>
+        <div class="button-container">
+            <button class="generate-button" onclick="generatePasswords()">生成密码</button>
+            <button class="download-button" onclick="downloadPasswords()">下载密码</button>
+        </div>
+        <div id="passwordResult" class="result"></div>
+    </div>
+
+    <script>
+        function generatePasswords() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const length = parseInt(document.getElementById('length').value);
+            const includeSpecial = document.getElementById('includeSpecial').checked;
+            const includeNumbers = document.getElementById('includeNumbers').checked;
+            const includeUpper = document.getElementById('includeUpper').checked;
+            const includeLower = document.getElementById('includeLower').checked;
+            const resultDiv = document.getElementById('passwordResult');
+
+            if (isNaN(quantity) || isNaN(length) || quantity <= 0 || length <= 0) {
+                resultDiv.innerHTML = '请输入有效的数量和长度';
+                return;
+            }
+
+            const specialChars = '!@#$%^&*()_+[]{}|;:,.<>?';
+            const numbers = '0123456789';
+            const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lower = 'abcdefghijklmnopqrstuvwxyz';
+
+            let charset = '';
+            if (includeSpecial) charset += specialChars;
+            if (includeNumbers) charset += numbers;
+            if (includeUpper) charset += upper;
+            if (includeLower) charset += lower;
+
+            if (charset.length === 0) {
+                resultDiv.innerHTML = '必须选择至少一种字符类型';
+                return;
+            }
+
+            let passwords = [];
+            for (let i = 0; i < quantity; i++) {
+                let password = '';
+                for (let j = 0; j < length; j++) {
+                    const randomIndex = Math.floor(Math.random() * charset.length);
+                    password += charset[randomIndex];
+                }
+                passwords.push(password);
+            }
+
+            // Clear previous results
+            resultDiv.innerHTML = '';
+
+            // Display new results
+            passwords.forEach(pw => {
+                const p = document.createElement('p');
+                p.textContent = pw;
+                resultDiv.appendChild(p);
+            });
+        }
+
+        function downloadPasswords() {
+            const resultDiv = document.getElementById('passwordResult');
+            const passwords = Array.from(resultDiv.querySelectorAll('p')).map(item => item.textContent);
+            const data = passwords.join('\n');
+            const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'passwords.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
