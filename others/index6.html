@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线压缩文件工具</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px; /* Ensure consistency with the previous page */
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left; /* Ensure labels are left-aligned */
+        }
+        input, button, select {
+            width: 100%; /* Ensure consistent width */
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            text-align: left; /* Ensure text is left-aligned */
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            text-align: center; /* Center align text */
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        body.dark-mode input, body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
+
+    <div class="container">
+        <h1>在线压缩文件工具</h1>
+        <div class="input-group">
+            <label for="fileInput">选择文件</label>
+            <input type="file" id="fileInput" multiple>
+        </div>
+        <div class="input-group">
+            <label for="filename">自定义压缩文件名</label>
+            <input type="text" id="filename" placeholder="输入压缩文件名" value="compressed">
+        </div>
+        <!-- <div class="input-group">
+            <label for="password">密码 (可选)</label>
+            <input type="password" id="password" placeholder="输入密码">
+        </div> -->
+        <button onclick="compressFiles()">压缩文件</button>
+        <div id="result" class="result"></div>
+    </div>
+    <script src="../script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.min.js"></script>
+    <script>
+        function compressFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const filename = document.getElementById('filename').value || 'compressed';
+            const password = document.getElementById('password').value;
+            const result = document.getElementById('result');
+            
+            if (fileInput.files.length === 0) {
+                result.innerHTML = '<p style="color: red;">请先选择要压缩的文件。</p>';
+                return;
+            }
+            
+            const zip = new JSZip();
+            const files = Array.from(fileInput.files);
+
+            files.forEach(file => {
+                zip.file(file.name, file, { password: password || null }); // Set password if provided
+            });
+
+            zip.generateAsync({ type: "blob" })
+                .then(function(content) {
+                    const zipBlob = new Blob([content], { type: "application/zip" });
+                    const url = URL.createObjectURL(zipBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename + '.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                })
+                .catch(function(e) {
+                    result.innerHTML = '<p style="color: red;">压缩文件时发生错误。</p>';
+                    console.error(e);
+                });
+        }
+
+    </script>
+</body>
+</html>

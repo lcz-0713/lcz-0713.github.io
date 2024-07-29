@@ -6,6 +6,8 @@
     <title>Elo 等级分计算器</title>
     <script src="../script.js"></script>
     <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,6 +78,12 @@
     </style>
 </head>
 <body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
     <div class="container">
         <h1>Elo 等级分计算器</h1>
         <input type="number" id="player1Rating" placeholder="玩家1 当前等级分" step="1">
