@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 编辑器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .editor-container {
+            display: flex;
+            gap: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 1em;
+            box-sizing: border-box;
+            overflow: auto;
+        }
+        .preview {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            min-height: 400px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            background-color: #4caf50;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .btn-container {
+            text-align: center;
+        }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .preview {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
+    <div class="container">
+        <h1>Markdown 编辑器</h1>
+        <div class="editor-container">
+            <textarea id="markdownInput" placeholder="在这里输入 Markdown 文本..."></textarea>
+            <div id="markdownPreview" class="preview"></div>
+        </div>
+        <div class="btn-container">
+            <button onclick="downloadPDF()">导出为 PDF</button>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.12/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.6.0/jspdf.umd.min.js"></script>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        // Function to render Markdown as HTML
+        function renderMarkdown() {
+            const inputText = document.getElementById('markdownInput').value;
+            const preview = document.getElementById('markdownPreview');
+            preview.innerHTML = marked.parse(inputText); // Convert Markdown to HTML
+        }
+
+        // Function to download the content as PDF
+        function downloadPDF() {
+            const doc = new jsPDF();
+            const markdownText = document.getElementById('markdownInput').value;
+
+            // Add Markdown text to the PDF
+            doc.text(markdownText, 10, 10);
+            doc.save('document.pdf');
+        }
+
+        // Attach input event to the textarea for real-time preview
+        document.getElementById('markdownInput').addEventListener('input', renderMarkdown);
+
+        // Initial rendering of the preview
+        renderMarkdown();
+    </script>
+</body>
+</html>

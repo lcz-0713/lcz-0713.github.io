@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本对比器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .textarea-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        textarea {
+            width: 48%;
+            height: 150px;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            overflow: auto;
+        }
+        .result {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .result div {
+            width: 48%;
+            white-space: pre-wrap;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            min-height: 150px;
+            overflow: auto;
+            background: #f9f9f9;
+        }
+        .diff {
+            display: inline;
+        }
+        .diff-ins {
+            background-color: #d4f7d4;
+            color: #2c6b2f;
+            text-decoration: underline;
+        }
+        .diff-del {
+            background-color: #f7d4d4;
+            color: #b22c2c;
+            text-decoration: underline;
+        }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result div {
+            width: 48%;
+            white-space: pre-wrap;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            min-height: 150px;
+            overflow: auto;
+            background: #3333;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
+    <div class="container">
+        <h1>文本对比器</h1>
+        <div class="textarea-group">
+            <textarea id="text1" placeholder="输入文本1..."></textarea>
+            <textarea id="text2" placeholder="输入文本2..."></textarea>
+        </div>
+        <div class="result">
+            <div id="result1"></div>
+            <div id="result2"></div>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script>
+        function updateComparison() {
+            const text1 = document.getElementById('text1').value;
+            const text2 = document.getElementById('text2').value;
+
+            const diff = getDiff(text1, text2);
+
+            const result1 = formatDiff(diff, 'text1');
+            const result2 = formatDiff(diff, 'text2');
+
+            document.getElementById('result1').innerHTML = result1;
+            document.getElementById('result2').innerHTML = result2;
+        }
+
+        function getDiff(text1, text2) {
+            const diff = [];
+            const maxLength = Math.max(text1.length, text2.length);
+
+            for (let i = 0; i < maxLength; i++) {
+                const char1 = text1[i] || '';
+                const char2 = text2[i] || '';
+
+                if (char1 !== char2) {
+                    if (char1) {
+                        diff.push({ type: 'del', text: char1 });
+                    }
+                    if (char2) {
+                        diff.push({ type: 'ins', text: char2 });
+                    }
+                } else {
+                    if (char1) {
+                        diff.push({ type: 'same', text: char1 });
+                    }
+                }
+            }
+            return diff;
+        }
+
+        function formatDiff(diff, source) {
+            return diff.map(item => {
+                if (source === 'text1') {
+                    if (item.type === 'del') {
+                        return `<span class="diff diff-del">${item.text}</span>`;
+                    } else if (item.type === 'same') {
+                        return item.text;
+                    }
+                } else if (source === 'text2') {
+                    if (item.type === 'ins') {
+                        return `<span class="diff diff-ins">${item.text}</span>`;
+                    } else if (item.type === 'same') {
+                        return item.text;
+                    }
+                }
+                return '';
+            }).join('');
+        }
+
+        document.getElementById('text1').addEventListener('input', updateComparison);
+        document.getElementById('text2').addEventListener('input', updateComparison);
+
+        updateComparison();  // Initial call to display empty states
+    </script>
+</body>
+</html>
