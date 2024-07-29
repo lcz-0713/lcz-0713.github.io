@@ -6,6 +6,8 @@
     <title>标准计算器</title>
     <!-- <link rel="stylesheet" href="../styles.css"> -->
     <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
     <style>
         .container {
             max-width: 300px;
@@ -104,8 +106,15 @@
             background-color: #45a049;
         }
     </style>
+    <link rel="stylesheet" href="button.css">
 </head>
 <body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
     <div class="container">
         <h1>标准计算器</h1>
         <div class="calculator">
@@ -130,7 +139,7 @@
         </div>
         
     </div>
-
+    
     <script src="../script.js"></script>
     <script>
         function appendToDisplay(value) {

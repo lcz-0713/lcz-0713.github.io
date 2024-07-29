@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投资回报计算器</title>
     <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,6 +58,16 @@
             font-weight: bold;
             color: #4caf50;
         }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s, background-color 0.3s;
+        }
         body.dark-mode input {
             background-color: #333;
             color: #fff;
@@ -68,6 +80,13 @@
     </style>
 </head>
 <body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
+    
     <div class="container">
         <h1>投资回报计算器</h1>
         <input type="number" id="initialInvestment" placeholder="初始投资金额">
