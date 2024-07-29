@@ -1,0 +1,63 @@
+.home-button:hover {
+    background-color: transparent;
+}
+.toggle-dark-mode:hover {
+    background-color: transparent;
+}
+.toggle-dark-mode{
+    padding-right: 10px;
+    padding-block: 1.5px;
+}
+.home-button{
+    padding-left: 10px;
+    padding-block: 1.5px;
+}
+.toggle-dark-mode,
+        .home-button {
+            position: fixed;
+            /* top: 20px; */
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s;
+        }
+        .home-button {
+            left: 20px;
+        }
+        .toggle-dark-mode {
+            right: 20px;
+        }
+        .toggle-dark-mode:hover,
+        .home-button:hover {
+            color: #555;
+        }
+        .dark-mode .toggle-dark-mode,
+        .dark-mode .home-button {
+            color: #fff;
+        }
+        .dark-mode .toggle-dark-mode:hover,
+        .dark-mode .home-button:hover {
+            color: #bbb;
+        }
+        .toggle-dark-mode {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s;
+        }
+        .toggle-dark-mode:hover {
+            color: #555;
+        }
+        .dark-mode .toggle-dark-mode {
+            color: #fff;
+        }
+        .dark-mode .toggle-dark-mode:hover {
+            color: #bbb;
+        }

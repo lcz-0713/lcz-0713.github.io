@@ -7,36 +7,19 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dark-mode.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
-    <style>
-        .toggle-dark-mode {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 24px;
-            color: #333;
-            transition: color 0.3s;
-        }
-        .toggle-dark-mode:hover {
-            color: #555;
-        }
-        .dark-mode .toggle-dark-mode {
-            color: #fff;
-        }
-        .dark-mode .toggle-dark-mode:hover {
-            color: #bbb;
-        }
-    </style>
+    <link rel="stylesheet" href="button.css">
 </head>
 <body>
-    <button id="toggle-dark-mode" class="toggle-dark-mode"> 
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
         <i class="fa fa-adjust" style="font-size:48px;"></i>  
-    </button>
+    </a>
+    
     <div class="container">
-        <h1><a href="https://github.com/lcz-0713/lcz-0713.github.io"><i class="fa fa-github" style="font-size:48px;"></i></a> lichenzhen的工具箱</h1>
-        <h3>当前工具数量：46</h3>
+        <h1><i class="fa fa-github" aria-hidden="true"></i></a> lichenzhen的工具箱</h1>
+        <h3>当前工具数量：47</h3>
 
         <div class="search-box">
             <input type="text" id="search" placeholder="搜索工具..." onkeyup="searchTools()">
@@ -46,111 +29,112 @@
             
             <h2><i class="fa fa-calculator" style="font-size:32px;"></i> &nbsp计算器工具</h2>
             <ul class="tools">
-                <li><a href="calculator/index1.html">标准计算器</a></li>
-                <li><a href="calculator/index2.html">科学计算器</a></li>
-                <li><a href="calculator/index3.html">投资回报计算器</a></li>
-                <li><a href="calculator/index4.html">贷款/抵押计算器</a></li>
-                <li><a href="calculator/index5.html">进制转换器</a></li>
+                <li><a href="calculator/index1.html" target="_blank">标准计算器</a></li>
+                <li><a href="calculator/index2.html" target="_blank">科学计算器</a></li>
+                <li><a href="calculator/index3.html" target="_blank">投资回报计算器</a></li>
+                <li><a href="calculator/index4.html" target="_blank">贷款/抵押计算器</a></li>
+                <li><a href="calculator/index5.html" target="_blank">进制转换器</a></li>
             </ul>
         </div>
         
         <div class="category">
             <h2><i class="fa fa-clock-o" style="font-size:32px;"></i> &nbsp时间管理工具</h2>
             <ul class="tools">
-                <li><a href="time/index1.html">世界时钟</a></li>
-                <li><a href="time/index2.html">倒计时器</a></li>
-                <li><a href="time/index3.html">番茄钟</a></li>
-                <li><a href="time/index4.html">时间转换器</a></li>
+                <li><a href="time/index1.html" target="_blank">世界时钟</a></li>
+                <li><a href="time/index2.html" target="_blank">倒计时器</a></li>
+                <li><a href="time/index3.html" target="_blank">番茄钟</a></li>
+                <li><a href="time/index4.html" target="_blank">时间转换器</a></li>
             </ul>
         </div>
         
         <div class="category">
             <h2><i class="fa fa-exchange" style="font-size:32px;"></i> &nbsp单位转换工具</h2>
             <ul class="tools">
-                <li><a href="conversion/index1.html">长度转换</a></li>
-                <li><a href="conversion/index2.html">重量转换</a></li>
-                <li><a href="conversion/index3.html">温度转换</a></li>
-                <li><a href="conversion/index4.html">货币转换</a></li>
+                <li><a href="conversion/index1.html" target="_blank">长度转换</a></li>
+                <li><a href="conversion/index2.html" target="_blank">重量转换</a></li>
+                <li><a href="conversion/index3.html" target="_blank">温度转换</a></li>
+                <li><a href="conversion/index4.html" target="_blank">货币转换</a></li>
             </ul>
         </div>
 
         <div class="category">
-            <h2><i class="fa fa-file-text" style="font-size:32px;"></i> &nbsp;文本处理工具</h2>
+            <h2><i class="fa fa-file-text-o" style="font-size:32px;"></i> &nbsp;文本处理工具</h2>
             <ul class="tools">
-                <li><a href="word/index1.html">字数统计器</a></li>
-                <li><a href="word/index2.html">文本对比器</a></li>
-                <li><a href="word/index3.html">AES/DES加密解密工具</a></li>
-                <li><a href="word/index4.html">Markdown编辑器</a></li>
+                <li><a href="text/index1.html" target="_blank">字数统计器</a></li>
+                <li><a href="text/index2.html" target="_blank">文本对比器</a></li>
+                <li><a href="text/index3.html" target="_blank">文本加密解密工具</a></li>
+                <li><a href="text/index4.html" target="_blank">Markdown编辑器</a></li>
+                <li><a href="text/index6.html" target="_blank">文本代码编辑工具</a></li>
             </ul>
         </div>
 
         <div class="category">
             <h2><i class="fa fa-paint-brush" style="font-size:32px;"></i> &nbsp;颜色工具</h2>
             <ul class="tools">
-                <li><a href="color/index1.html">图片取色器</a></li>
-                <li><a href="color/index2.html">色码转换器 (HEX, RGB, HSL)</a></li>
-                <li><a href="color/index3.html">调色板生成器</a></li>
-                <li><a href="color/index4.html">渐变色生成器</a></li>
+                <li><a href="color/index1.html" target="_blank">图片取色器</a></li>
+                <li><a href="color/index2.html" target="_blank">色码转换器 (HEX, RGB, HSL)</a></li>
+                <li><a href="color/index3.html" target="_blank">调色板生成器</a></li>
+                <li><a href="color/index4.html" target="_blank">渐变色生成器</a></li>
             </ul>
         </div>
 
         <div class="category">
             <h2><i class="fa fa-code" style="font-size:32px;"></i> &nbsp;开发工具</h2>
             <ul class="tools">
-                <li><a href="development/index1.html">JSON格式化工具</a></li>
-                <li><a href="development/index2.html">正则表达式测试工具</a></li>
-                <li><a href="development/index3.html">代码高亮工具</a></li>
-                <li><a href="development/index4.html">HTTP请求模拟器</a></li>
+                <li><a href="development/index1.html" target="_blank">JSON格式化工具</a></li>
+                <li><a href="development/index2.html" target="_blank">正则表达式测试工具</a></li>
+                <li><a href="development/index3.html" target="_blank">代码高亮工具</a></li>
+                <li><a href="development/index4.html" target="_blank">HTTP请求模拟器</a></li>
             </ul>
         </div>
 
         <div class="category">
             <h2><i class="fa fa-heartbeat" style="font-size:32px;"></i> &nbsp;健康工具</h2>
             <ul class="tools">
-                <li><a href="health/index1.html">BMI计算器</a></li>
-                <li><a href="health/index2.html">每日卡路里需求计算器</a></li>
-                <li><a href="health/index3.html">心率计算器</a></li>
+                <li><a href="health/index1.html" target="_blank">BMI计算器</a></li>
+                <li><a href="health/index2.html" target="_blank">每日卡路里需求计算器</a></li>
+                <li><a href="health/index3.html" target="_blank">心率计算器</a></li>
             </ul>
         </div>
 
         <div class="category">
             <h2><i class="fa fa-file-photo-o" style="font-size:32px;"></i> &nbsp;图像处理工具</h2>
             <ul class="tools">
-                <li><a href="photo/index1.html">图片压缩器</a></li>
-                <li><a href="photo/index2.html">图片编辑工具</a></li>
-                <li><a href="photo/index3.html">图片格式转换器</a></li>
+                <li><a href="photo/index1.html" target="_blank">图片压缩器</a></li>
+                <li><a href="photo/index2.html" target="_blank">图片编辑工具</a></li>
+                <li><a href="photo/index3.html" target="_blank">图片格式转换器</a></li>
             </ul>
         </div>
 
         <div class="category">
             <h2><i class="fa fa-wifi" style="font-size:32px;"></i> &nbsp;网络工具</h2>
             <ul class="tools">
-                <li><a href="Internet/index1.html">IP地址查询</a></li>
-                <li><a href="Internet/index2.html">DNS查询</a></li>
-                <li><a href="Internet/index3.html">Ping测试工具</a></li>
-                <li><a href="Internet/index4.html">密码强度检查器</a></li>
+                <li><a href="Internet/index1.html" target="_blank">IP地址查询</a></li>
+                <li><a href="Internet/index2.html" target="_blank">DNS查询</a></li>
+                <li><a href="Internet/index3.html" target="_blank">Ping测试工具</a></li>
+                <li><a href="Internet/index4.html" target="_blank">密码强度检查器</a></li>
             </ul>
         </div>
 
         <div class="category">
             <h2><i class="fa fa-gamepad" style="font-size:32px;"></i> &nbsp;娱乐工具</h2>
             <ul class="tools">
-                <li><a href="happy/index1.html">随机数生成器</a></li>
-                <li><a href="happy/index2.html">抽签工具</a></li>
-                <li><a href="happy/index3.html">二维码生成器</a></li>
-                <li><a href="happy/index4.html">猜数字游戏</a></li>
-                <li><a href="happy/index5.html">大转盘抽奖工具</a></li>
+                <li><a href="happy/index1.html" target="_blank">随机数生成器</a></li>
+                <li><a href="happy/index2.html" target="_blank">抽签工具</a></li>
+                <li><a href="happy/index3.html" target="_blank">二维码生成器</a></li>
+                <li><a href="happy/index4.html" target="_blank">猜数字游戏</a></li>
+                <li><a href="happy/index5.html" target="_blank">大转盘抽奖工具</a></li>
             </ul>
         </div>
 
         <div class="category">
             <h2><i class="fa fa-dropbox" style="font-size:32px;"></i> &nbsp;其它工具</h2>
             <ul class="tools">
-                <li><a href="others/index1.html">反应速度测试</a></li>
-                <li><a href="others/index2.html">CPS测试</a></li>
-                <li><a href="others/index3.html">Elo等级分计算</a></li>
-                <li><a href="others/index4.html">音频格式转换器</a></li>
-                <li><a href="others/index5.html">视频格式转换器</a></li>
+                <li><a href="others/index1.html" target="_blank">反应速度测试</a></li>
+                <li><a href="others/index2.html" target="_blank">CPS测试</a></li>
+                <li><a href="others/index3.html" target="_blank">Elo等级分计算</a></li>
+                <li><a href="others/index4.html" target="_blank">音频格式转换器</a></li>
+                <li><a href="others/index5.html" target="_blank">视频格式转换器</a></li>
             </ul>
         </div>
         
