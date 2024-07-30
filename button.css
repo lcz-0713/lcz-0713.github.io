@@ -1,59 +1,49 @@
-        /* 基础按钮样式 */
+.home-button, .toggle-dark-mode {
+        position: fixed;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        color: #333;
+        transition: color 0.3s;
+        z-index: 1000; 
+}
+
+.home-button {
+        top: 20px;
+        left: 20px;
+}
+
+.toggle-dark-mode {
+        top: 20px;
+        right: 20px;
+}
+.home-button, .toggle-dark-mode {
+        padding: 10px;
+        border-radius: 50%;
+}
+.home-button:hover, .toggle-dark-mode:hover {
+        color: #555;
+}
+
+.dark-mode .home-button, .dark-mode .toggle-dark-mode {
+        color: #fff;
+}
+.dark-mode .home-button:hover, .dark-mode .toggle-dark-mode:hover {
+        color: #bbb;
+}
+
+/* 手机适配 */
+@media (max-width: 768px) {
         .home-button, .toggle-dark-mode {
-            position: fixed;
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 24px;
-            color: #333;
-            transition: color 0.3s;
-            z-index: 1000; /* 确保按钮在其他内容上方 */
-        }
-
-        /* 按钮位置和大小调整 */
-        .home-button {
-            top: 20px;
-            left: 20px;
-        }
-
-        .toggle-dark-mode {
-            top: 20px;
-            right: 20px;
-        }
-
-        /* 按钮的可点击区域 */
-        .home-button, .toggle-dark-mode {
-            padding: 10px;
-            border-radius: 50%;
-        }
-
-        /* 悬停效果 */
-        .home-button:hover, .toggle-dark-mode:hover {
-            color: #555;
-        }
-
-        /* 暗黑模式调整 */
-        .dark-mode .home-button, .dark-mode .toggle-dark-mode {
-            color: #fff;
-        }
-
-        .dark-mode .home-button:hover, .dark-mode .toggle-dark-mode:hover {
-            color: #bbb;
-        }
-
-        /* 手机适配 */
-        @media (max-width: 768px) {
-            .home-button, .toggle-dark-mode {
                 font-size: 36px;
                 top: 10px;
                 padding: 12px;
-            }
-
-            .home-button {
-                left: 10px;
-            }
-
-            .toggle-dark-mode {
-                right: 10px;
-            }
         }
+        .home-button {
+                left: 10px;
+        }
+        .toggle-dark-mode {
+                right: 10px;
+        }
+}
