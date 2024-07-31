@@ -104,6 +104,14 @@ h3 {
     color: #ffc107;
     border-color: #ffc107;
 }
+.category:nth-of-type(12) h2 {
+    color: #CCA6D8;
+    border-color: #CCA6D8;
+}
+.category:nth-of-type(13) h2 {
+    color: #217432;
+    border-color: #217432;
+}
 .tools {
     list-style-type: none;
     padding-left: 0;
@@ -170,4 +178,20 @@ h3 {
     100% {
         text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
     }
+}
+footer {
+    color: #ffffff;
+    text-align: center;
+    padding: 5px 0;
+    bottom: 0;
+    width: 100%;
+    font-size: 15px;
+}
+footer a {
+    color: #61dafb;
+    text-decoration: none;
+}
+.footer-content {
+    max-width: 1200px; 
+    margin: 0 auto;
 }
