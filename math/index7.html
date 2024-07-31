@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线绩点 (GPA) 计算器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
+    </a>
+    <div class="container">
+        <h1>在线绩点 (GPA) 计算器</h1>
+        <div id="courses">
+            <div class="form-group">
+                <label for="course1">课程 1:</label>
+                <input type="text" id="course1" placeholder="课程名称">
+                <input type="number" id="credit1" placeholder="学分" min="0" step="any">
+                <input type="number" id="grade1" placeholder="成绩 (0-100)" min="0" max="100" step="any">
+            </div>
+        </div>
+        <button onclick="addCourse()">添加课程</button>
+        <button onclick="calculateGPA()">计算 GPA</button>
+        <div id="result" class="result">
+            <p>加权平均绩点 (GPA): <span id="gpaResult" class="highlight">0.00</span></p>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script>
+        let courseCount = 1;
+
+        function addCourse() {
+            courseCount++;
+            const courseDiv = document.createElement('div');
+            courseDiv.className = 'form-group';
+            courseDiv.innerHTML = `
+                <label for="course${courseCount}">课程 ${courseCount}:</label>
+                <input type="text" id="course${courseCount}" placeholder="课程名称">
+                <input type="number" id="credit${courseCount}" placeholder="学分" min="0" step="any">
+                <input type="number" id="grade${courseCount}" placeholder="成绩 (0-100)" min="0" max="100" step="any">
+            `;
+            document.getElementById('courses').appendChild(courseDiv);
+        }
+
+        function calculateGPA() {
+            let totalCredits = 0;
+            let totalPoints = 0;
+            for (let i = 1; i <= courseCount; i++) {
+                const credit = parseFloat(document.getElementById(`credit${i}`).value);
+                const grade = parseFloat(document.getElementById(`grade${i}`).value);
+
+                if (isNaN(credit) || isNaN(grade) || credit <= 0 || grade < 0 || grade > 100) {
+                    alert('请输入有效的学分和成绩');
+                    return;
+                }
+
+                totalCredits += credit;
+                totalPoints += credit * (grade / 100 * 4.0); // 将成绩转换为绩点 (4.0 制度)
+            }
+
+            const gpa = (totalPoints / totalCredits).toFixed(2);
+            document.getElementById('gpaResult').innerText = gpa;
+        }
+    </script>
+</body>
+</html>

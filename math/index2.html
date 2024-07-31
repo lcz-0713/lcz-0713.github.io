@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线分解质因数工具</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
+    </a>
+    <div class="container">
+        <h1>在线分解质因数工具</h1>
+        <div class="form-group">
+            <label for="number">输入一个整数:</label>
+            <input type="number" id="number" min="2" placeholder="请输入整数">
+        </div>
+        <button onclick="factorize()">分解</button>
+        <div id="result" class="result">
+            <p>质因数分解结果:</p>
+            <p id="factorsResult" class="highlight">无</p>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script>
+        function factorize() {
+            const number = parseInt(document.getElementById('number').value);
+            if (isNaN(number) || number < 2) {
+                document.getElementById('factorsResult').innerText = '请输入大于 1 的整数';
+                return;
+            }
+            function primeFactors(n) {
+                const factors = [];
+                let divisor = 2;
+                while (n >= 2) {
+                    if (n % divisor === 0) {
+                        factors.push(divisor);
+                        n /= divisor;
+                    } else {
+                        divisor++;
+                    }
+                }
+                return factors.join(' × ');
+            }
+            document.getElementById('factorsResult').innerText = primeFactors(number);
+        }
+    </script>
+</body>
+</html>

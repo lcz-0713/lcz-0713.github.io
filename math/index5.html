@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线 LaTeX 数学公式转图片工具</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            height: 100px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+        }
+        .button-group button {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        .button-group button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            background: #e0ffe0;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+            text-align: center;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
+    </a>
+    <div class="container">
+        <h1>在线 LaTeX 数学公式转图片工具</h1>
+        <div class="form-group">
+            <label for="latexInput">输入 LaTeX 公式:</label>
+            <textarea id="latexInput" placeholder="例如: \frac{a}{b}"></textarea>
+        </div>
+        <div class="button-group">
+            <button onclick="renderLaTeX()">渲染公式</button>
+            <button onclick="downloadImage('png')">下载 PNG</button>
+            <button onclick="downloadImage('svg')">下载 SVG</button>
+        </div>
+        <div id="result" class="result">
+            <div id="latexOutput"></div>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0/dist/html2canvas.min.js"></script>
+    <script>
+        function renderLaTeX() {
+            const input = document.getElementById('latexInput').value;
+            const output = document.getElementById('latexOutput');
+            output.innerHTML = `\\(${input}\\)`;
+            MathJax.typesetPromise([output]);
+        }
+
+        function downloadImage(format) {
+            const output = document.getElementById('latexOutput');
+
+            if (format === 'png') {
+                // 使用 html2canvas 生成 PNG
+                html2canvas(output).then(canvas => {
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL('image/png');
+                    link.download = 'formula.png';
+                    link.click();
+                });
+            } else if (format === 'svg') {
+                // 获取 MathJax 渲染的 SVG 元素
+                const svg = output.querySelector('svg');
+                if (svg) {
+                    // 序列化 SVG 内容
+                    const serializer = new XMLSerializer();
+                    let svgString = serializer.serializeToString(svg);
+
+                    // 添加 XML 头
+                    svgString = '<?xml version="1.0" standalone="no"?>\r\n' + svgString;
+
+                    // 创建 Blob 对象并触发下载
+                    const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'formula.svg';
+                    link.click();
+                    URL.revokeObjectURL(url);
+                } else {
+                    alert('无法生成 SVG，请确保公式已成功渲染为 SVG。');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

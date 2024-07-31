@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线统计计算工具</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
+    </a>
+    <div class="container">
+        <h1>在线统计计算器</h1>
+        <div class="form-group">
+            <label for="data">输入数据 (用逗号分隔):</label>
+            <input type="text" id="data" placeholder="例如: 1,2,3,4,5">
+        </div>
+        <button onclick="calculateStatistics()">计算</button>
+        <div id="result" class="result">
+            <p>计算结果:</p>
+            <p id="average" class="highlight">平均数: 无</p>
+            <p id="mode" class="highlight">众数: 无</p>
+            <p id="median" class="highlight">中位数: 无</p>
+            <p id="range" class="highlight">极差: 无</p>
+            <p id="variance" class="highlight">平均数方差: 无</p>
+            <p id="stddev" class="highlight">标准差: 无</p>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script>
+        function calculateStatistics() {
+            const data = document.getElementById('data').value.split(',').map(num => parseFloat(num.trim())).filter(num => !isNaN(num));
+            if (data.length === 0) {
+                alert('请输入有效的数据');
+                return;
+            }
+            data.sort((a, b) => a - b);
+            const n = data.length;
+            const sum = data.reduce((a, b) => a + b, 0);
+            const mean = sum / n;
+
+            // Calculate Mode
+            const frequency = {};
+            let maxFrequency = 0;
+            let modes = [];
+            data.forEach(value => {
+                frequency[value] = (frequency[value] || 0) + 1;
+                if (frequency[value] > maxFrequency) {
+                    maxFrequency = frequency[value];
+                }
+            });
+            for (const key in frequency) {
+                if (frequency[key] === maxFrequency) {
+                    modes.push(parseFloat(key));
+                }
+            }
+
+            // Calculate Median
+            const median = (n % 2 === 0) ? (data[n / 2 - 1] + data[n / 2]) / 2 : data[Math.floor(n / 2)];
+
+            // Calculate Range
+            const range = data[data.length - 1] - data[0];
+
+            // Calculate Variance and Standard Deviation
+            const variance = data.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / n;
+            const stddev = Math.sqrt(variance);
+
+            // Display Results
+            document.getElementById('average').innerText = `平均数: ${mean.toFixed(2)}`;
+            document.getElementById('mode').innerText = `众数: ${modes.join(', ')}`;
+            document.getElementById('median').innerText = `中位数: ${median.toFixed(2)}`;
+            document.getElementById('range').innerText = `极差: ${range.toFixed(2)}`;
+            document.getElementById('variance').innerText = `平均数方差: ${variance.toFixed(2)}`;
+            document.getElementById('stddev').innerText = `标准差: ${stddev.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>

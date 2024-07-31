@@ -1,1 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线斐波那契数列计算器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
+    </a>
+    <div class="container">
+        <h1>在线斐波那契数列计算器</h1>
+        <div class="form-group">
+            <label for="numTerms">计算前 N 项斐波那契数列:</label>
+            <input type="number" id="numTerms" placeholder="请输入项数" min="1" step="1">
+        </div>
+        <button onclick="calculateFibonacci()">计算</button>
+        <div id="result" class="result">
+            <p>斐波那契数列: <span id="fibonacciResult" class="highlight"></span></p>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script>
+        function calculateFibonacci() {
+            const numTerms = parseInt(document.getElementById('numTerms').value);
+            if (isNaN(numTerms) || numTerms <= 0) {
+                document.getElementById('fibonacciResult').innerText = '请输入一个有效的正整数';
+                return;
+            }
 
+            let fibonacciSequence = [];
+            let a = 1, b = 1;
+            for (let i = 0; i < numTerms; i++) {
+                if (i === 0) {
+                    fibonacciSequence.push(a);
+                } else if (i === 1) {
+                    fibonacciSequence.push(b);
+                } else {
+                    let next = a + b;
+                    a = b;
+                    b = next;
+                    fibonacciSequence.push(next);
+                }
+            }
+
+            document.getElementById('fibonacciResult').innerText = fibonacciSequence.join(', ');
+        }
+    </script>
+</body>
+</html>

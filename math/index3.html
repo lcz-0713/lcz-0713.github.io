@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线周长、面积、体积算器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
+    </a>
+    <div class="container">
+        <h1>在线周长、面积、体积算器</h1>
+        <select id="shapeType">
+            <option value="circle">圆</option>
+            <option value="rectangle">矩形</option>
+            <option value="triangle">三角形</option>
+            <option value="sphere">球体</option>
+            <option value="cuboid">长方体</option>
+        </select>
+        <div id="circleInputs" class="form-group">
+            <label for="circleRadius">圆的半径:</label>
+            <input type="number" id="circleRadius" placeholder="请输入半径">
+        </div>
+        <div id="rectangleInputs" class="form-group" style="display: none;">
+            <label for="rectangleWidth">矩形的宽度:</label>
+            <input type="number" id="rectangleWidth" placeholder="请输入宽度">
+            <label for="rectangleHeight">矩形的高度:</label>
+            <input type="number" id="rectangleHeight" placeholder="请输入高度">
+        </div>
+        <div id="triangleInputs" class="form-group" style="display: none;">
+            <label for="triangleBase">三角形的底边:</label>
+            <input type="number" id="triangleBase" placeholder="请输入底边">
+            <label for="triangleHeight">三角形的高度:</label>
+            <input type="number" id="triangleHeight" placeholder="请输入高度">
+        </div>
+        <div id="sphereInputs" class="form-group" style="display: none;">
+            <label for="sphereRadius">球体的半径:</label>
+            <input type="number" id="sphereRadius" placeholder="请输入半径">
+        </div>
+        <div id="cuboidInputs" class="form-group" style="display: none;">
+            <label for="cuboidLength">长方体的长度:</label>
+            <input type="number" id="cuboidLength" placeholder="请输入长度">
+            <label for="cuboidWidth">长方体的宽度:</label>
+            <input type="number" id="cuboidWidth" placeholder="请输入宽度">
+            <label for="cuboidHeight">长方体的高度:</label>
+            <input type="number" id="cuboidHeight" placeholder="请输入高度">
+        </div>
+        <button onclick="calculateGeometry()">计算</button>
+        <div id="result" class="result">
+            <p>结果:</p>
+            <p id="geometryResult" class="highlight">无</p>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script>
+        document.getElementById('shapeType').addEventListener('change', function() {
+            document.querySelectorAll('.form-group').forEach(group => group.style.display = 'none');
+            const selectedShape = this.value;
+            document.getElementById(selectedShape + 'Inputs').style.display = 'block';
+        });
+
+        function calculateGeometry() {
+            const shape = document.getElementById('shapeType').value;
+            let result = '';
+
+            if (shape === 'circle') {
+                const radius = parseFloat(document.getElementById('circleRadius').value);
+                if (isNaN(radius) || radius <= 0) {
+                    result = '请输入有效的半径';
+                } else {
+                    result = `周长: ${2 * Math.PI * radius.toFixed(2)}\n面积: ${Math.PI * radius * radius.toFixed(2)}`;
+                }
+            } else if (shape === 'rectangle') {
+                const width = parseFloat(document.getElementById('rectangleWidth').value);
+                const height = parseFloat(document.getElementById('rectangleHeight').value);
+                if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
+                    result = '请输入有效的宽度和高度';
+                } else {
+                    result = `周长: ${(2 * (width + height)).toFixed(2)}\n面积: ${(width * height).toFixed(2)}`;
+                }
+            } else if (shape === 'triangle') {
+                const base = parseFloat(document.getElementById('triangleBase').value);
+                const height = parseFloat(document.getElementById('triangleHeight').value);
+                if (isNaN(base) || isNaN(height) || base <= 0 || height <= 0) {
+                    result = '请输入有效的底边和高度';
+                } else {
+                    result = `面积: ${(0.5 * base * height).toFixed(2)}`;
+                }
+            } else if (shape === 'sphere') {
+                const radius = parseFloat(document.getElementById('sphereRadius').value);
+                if (isNaN(radius) || radius <= 0) {
+                    result = '请输入有效的半径';
+                } else {
+                    result = `表面积: ${(4 * Math.PI * radius * radius).toFixed(2)}\n体积: ${(4/3 * Math.PI * Math.pow(radius, 3)).toFixed(2)}`;
+                }
+            } else if (shape === 'cuboid') {
+                const length = parseFloat(document.getElementById('cuboidLength').value);
+                const width = parseFloat(document.getElementById('cuboidWidth').value);
+                const height = parseFloat(document.getElementById('cuboidHeight').value);
+                if (isNaN(length) || isNaN(width) || isNaN(height) || length <= 0 || width <= 0 || height <= 0) {
+                    result = '请输入有效的长度、宽度和高度';
+                } else {
+                    result = `表面积: ${(2 * (length * width + width * height + height * length)).toFixed(2)}\n体积: ${(length * width * height).toFixed(2)}`;
+                }
+            }
+            document.getElementById('geometryResult').innerText = result;
+        }
+    </script>
+</body>
+</html>
