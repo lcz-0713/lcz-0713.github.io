@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片编辑工具</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <title>图片压缩器</title>
     <link rel="stylesheet" href="../dark-mode.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="../button.css">
@@ -18,26 +17,22 @@
             color: #333;
         }
         .container {
-            display: flex;
-            max-width: 1200px;
+            max-width: 600px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .controls {
-            width: 30%;
-            padding: 10px;
-            border-right: 2px solid #ddd;
-            box-sizing: border-box;
-        }
-        .controls h1 {
-            text-align: center;
+        h1 {
             margin-bottom: 20px;
         }
         .form-group {
             margin-bottom: 20px;
+            width: 100%;
         }
         .form-group label {
             display: block;
@@ -56,41 +51,36 @@
             background-color: #4caf50;
             color: white;
             cursor: pointer;
-            border: none;
-            margin-top: 10px;
         }
         button:hover {
             background-color: #45a049;
         }
-        .image-editor {
-            width: 70%;
-            padding: 10px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .crop-container, .canvas-container {
-            position: relative;
+        .result {
+            margin-top: 20px;
             width: 100%;
-            background-color: #eee;
-            padding: 10px;
-            box-sizing: border-box;
+            text-align: center;
         }
-        .crop-container {
-            max-height: 80%;
-            overflow: hidden;
-        }
-        .crop-container img {
-            width: 100%;
-            height: auto;
+        .result img {
+            max-width: 100%;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
             display: block;
+            margin: 0 auto;
         }
-        .canvas-container {
-            max-height: 80%;
-            overflow: hidden;
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
         }
-        canvas {
-            width: 100%;
-            height: auto;
+        .download-button:hover {
+            background-color: #45a049;
         }
         body.dark-mode textarea {
             background-color: #333;
@@ -121,168 +111,69 @@
         <i class="fa fa-adjust" style="font-size:48px;"></i>  
     </a>
     <div class="container">
-        <div class="controls">
-            <h1>图片编辑工具</h1>
-            <div class="form-group">
-                <label for="uploadImage">上传图片:</label>
-                <input type="file" id="uploadImage" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label for="rotate">旋转角度:</label>
-                <input type="range" id="rotate" min="0" max="360" value="0">
-            </div>
-            <div class="form-group">
-                <label for="brightness">亮度:</label>
-                <input type="range" id="brightness" min="0" max="200" value="100">
-                <label for="contrast">对比度:</label>
-                <input type="range" id="contrast" min="0" max="200" value="100">
-            </div>
-            <button id="cropCompleteButton">裁剪完成</button>
-            <div class="download">
-                <button id="downloadButton">下载裁剪后图片</button>
-            </div>
+        <h1>图片压缩器</h1>
+        <div class="form-group">
+            <label for="uploadImage">上传图片:</label>
+            <input type="file" id="uploadImage" accept="image/*">
         </div>
-        <div class="image-editor">
-            <div class="crop-container">
-                <img id="image" style="display:none;">
-            </div>
-            <div class="canvas-container">
-                <canvas id="canvas"></canvas>
-            </div>
+        <div class="form-group">
+            <label for="quality">压缩质量:</label>
+            <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.8">
+            <p>质量: <span id="qualityValue">0.8</span></p>
         </div>
+        <button id="compressButton">压缩图片</button>
+        <div id="result" class="result"></div>
     </div>
     <script src="../script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script>
         const uploadImage = document.getElementById('uploadImage');
-        const rotateInput = document.getElementById('rotate');
-        const brightnessInput = document.getElementById('brightness');
-        const contrastInput = document.getElementById('contrast');
-        const downloadButton = document.getElementById('downloadButton');
-        const cropCompleteButton = document.getElementById('cropCompleteButton');
-        const imageElement = document.getElementById('image');
-        const cropContainer = document.querySelector('.crop-container');
-        const canvasElement = document.getElementById('canvas');
+        const qualityInput = document.getElementById('quality');
+        const qualityValue = document.getElementById('qualityValue');
+        const compressButton = document.getElementById('compressButton');
+        const resultDiv = document.getElementById('result');
 
-        let cropper;
-        let ctx;
+        qualityInput.addEventListener('input', () => {
+            qualityValue.textContent = qualityInput.value;
+        });
 
-        uploadImage.addEventListener('change', (event) => {
-            const file = event.target.files[0];
+        compressButton.addEventListener('click', () => {
+            const file = uploadImage.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    imageElement.src = e.target.result;
-                    imageElement.style.display = 'block';
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    cropper = new Cropper(imageElement, {
-                        aspectRatio: NaN,
-                        viewMode: 1,
-                        responsive: true,
-                        autoCropArea: 1,
-                        cropBoxResizable: true,
-                        cropBoxMovable: true,
-                        minContainerWidth: 300,
-                        minContainerHeight: 300,
-                        minCropBoxWidth: 100,
-                        minCropBoxHeight: 100,
-                        ready: function () {
-                            ctx = canvasElement.getContext('2d');
-                            updateCanvas();
-                        }
-                    });
+                    const img = new Image();
+                    img.onload = () => {
+                        // Create a canvas element to draw the image
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        // Calculate scaled dimensions
+                        const maxWidth = 600;
+                        const scale = Math.min(maxWidth / img.width, 1);
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+
+                        // Draw the image on the canvas
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        // Get the compression quality
+                        const quality = qualityInput.value;
+
+                        // Compress the image and get the data URL
+                        const compressedImageURL = canvas.toDataURL('image/jpeg', quality);
+
+                        // Display the compressed image and download link
+                        resultDiv.innerHTML = `
+                            <h2>压缩后的图片:</h2>
+                            <img src="${compressedImageURL}" alt="Compressed Image">
+                            <a href="${compressedImageURL}" download="compressed_image.jpg" class="download-button">下载图片</a>
+                        `;
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
-            }
-        });
-
-        rotateInput.addEventListener('input', (e) => {
-            if (cropper) {
-                cropper.rotate(parseFloat(e.target.value) - cropper.getData().rotate);
-                updateCanvas();
-            }
-        });
-
-        brightnessInput.addEventListener('input', () => {
-            updateCanvas();
-        });
-
-        contrastInput.addEventListener('input', () => {
-            updateCanvas();
-        });
-
-        function updateCanvas() {
-            if (cropper) {
-                const croppedCanvas = cropper.getCroppedCanvas({
-                    width: cropContainer.offsetWidth,
-                    height: cropContainer.offsetHeight
-                });
-
-                const brightness = brightnessInput.value / 100;
-                const contrast = (contrastInput.value - 100) / 100;
-
-                // Update the canvas with the adjusted image
-                canvasElement.width = croppedCanvas.width;
-                canvasElement.height = croppedCanvas.height;
-                const imageData = croppedCanvas.getContext('2d').getImageData(0, 0, croppedCanvas.width, croppedCanvas.height);
-                
-                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-                ctx.putImageData(adjustImage(imageData, brightness, contrast), 0, 0);
-            }
-        }
-
-        function adjustImage(imageData, brightness, contrast) {
-            const data = imageData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                // Apply brightness
-                data[i] = clamp(data[i] * brightness);     // Red
-                data[i + 1] = clamp(data[i + 1] * brightness); // Green
-                data[i + 2] = clamp(data[i + 2] * brightness); // Blue
-
-                // Apply contrast
-                const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-                data[i] = clamp(factor * (data[i] - 128) + 128);     // Red
-                data[i + 1] = clamp(factor * (data[i + 1] - 128) + 128); // Green
-                data[i + 2] = clamp(factor * (data[i + 2] - 128) + 128); // Blue
-            }
-
-            return imageData;
-        }
-
-        function clamp(value) {
-            return Math.max(0, Math.min(255, value));
-        }
-
-        cropCompleteButton.addEventListener('click', () => {
-            if (cropper) {
-                cropper.disable(); // Disable cropping
-                const croppedCanvas = cropper.getCroppedCanvas({
-                    width: cropContainer.offsetWidth,
-                    height: cropContainer.offsetHeight
-                });
-                const croppedImageURL = croppedCanvas.toDataURL('image/png');
-                
-                // Draw the cropped image onto the display canvas
-                const context = canvasElement.getContext('2d');
-                const img = new Image();
-                img.onload = function () {
-                    canvasElement.width = img.width;
-                    canvasElement.height = img.height;
-                    context.drawImage(img, 0, 0);
-                };
-                img.src = croppedImageURL;
-            }
-        });
-
-        downloadButton.addEventListener('click', () => {
-            if (canvasElement) {
-                const link = document.createElement('a');
-                link.href = canvasElement.toDataURL('image/png');
-                link.download = 'edited-image.png';
-                link.click();
+            } else {
+                resultDiv.innerHTML = '<p>请上传图片文件。</p>';
             }
         });
     </script>

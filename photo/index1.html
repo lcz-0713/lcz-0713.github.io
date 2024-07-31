@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片压缩器</title>
+    <title>图像等比例缩放和裁剪工具</title>
     <link rel="stylesheet" href="../dark-mode.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="../button.css">
@@ -23,71 +23,83 @@
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
         }
         h1 {
             margin-bottom: 20px;
         }
-        .form-group {
+        .input-group {
             margin-bottom: 20px;
             width: 100%;
+            text-align: left;
         }
-        .form-group label {
+        .input-group label {
             display: block;
             margin-bottom: 5px;
         }
-        input[type="file"], input[type="range"], button {
-            width: 100%;
+        input[type="file"], input[type="number"], button {
             padding: 10px;
             font-size: 1em;
+            margin: 5px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
+            width: calc(100% - 22px); /* Adjust width for padding and border */
         }
-        button {
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .button-group button {
+            padding: 8px 10px; /* 调整按钮的宽度 */
+            font-size: 0.9em;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            min-width: 100px; /* 缩小按钮宽度 */
+        }
+        .btn-primary {
             background-color: #4caf50;
             color: white;
-            cursor: pointer;
         }
-        button:hover {
+        .btn-primary:hover {
             background-color: #45a049;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-secondary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #0056b3;
         }
         .result {
             margin-top: 20px;
             width: 100%;
             text-align: center;
         }
-        .result img {
-            max-width: 100%;
-            border: 2px solid #4caf50;
+        .result canvas {
+            border: 1px solid #ddd;
             border-radius: 8px;
-            display: block;
-            margin: 0 auto;
         }
-        .download-button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 1em;
+        .home-button {
+            position: fixed;
+            top: 20px;
+            background-color: transparent;
             border: none;
-            border-radius: 5px;
-            background-color: #4caf50;
-            color: white;
             cursor: pointer;
-            text-decoration: none;
-            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s, background-color 0.3s;
         }
-        .download-button:hover {
-            background-color: #45a049;
-        }
-        body.dark-mode textarea {
-            background-color: #333;
-            color: #fff;
-            border-color: #666;
-        }
-        body.dark-mode input {
+        body.dark-mode input, body.dark-mode select{
             background-color: #333;
             color: #fff;
             border-color: #666;
@@ -95,11 +107,6 @@
         body.dark-mode .result {
             background: #333;
             border-color: #4caf50;
-        }
-        body.dark-mode select {
-            background-color: #333;
-            color: #fff;
-            border-color: #666;
         }
     </style>
 </head>
@@ -110,72 +117,108 @@
     <a id="toggle-dark-mode" class="toggle-dark-mode"> 
         <i class="fa fa-adjust" style="font-size:48px;"></i>  
     </a>
+
     <div class="container">
-        <h1>图片压缩器</h1>
-        <div class="form-group">
-            <label for="uploadImage">上传图片:</label>
-            <input type="file" id="uploadImage" accept="image/*">
+        <h1>图片缩放工具</h1>
+        <div class="input-group">
+            <label for="fileInput">选择要缩放和裁剪的图片</label>
+            <input type="file" id="fileInput" accept="image/*" onchange="loadImage()">
         </div>
-        <div class="form-group">
-            <label for="quality">压缩质量:</label>
-            <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.8">
-            <p>质量: <span id="qualityValue">0.8</span></p>
+        <div class="input-group">
+            <label for="scaleFactor">当前缩放比例 (%):</label>
+            <input type="number" id="scaleFactor" min="1" max="1000" step="1" value="100" disabled>
         </div>
-        <button id="compressButton">压缩图片</button>
+        <div class="button-group">
+            <button class="btn-primary" onclick="adjustScale(0.1)">放大</button>
+            <button class="btn-danger" onclick="adjustScale(-0.1)">缩小</button>
+        </div>
+        <div class="button-group">
+            <button class="btn-secondary" onclick="cropImage()">缩放完成</button>
+        </div>
         <div id="result" class="result"></div>
     </div>
     <script src="../script.js"></script>
     <script>
-        const uploadImage = document.getElementById('uploadImage');
-        const qualityInput = document.getElementById('quality');
-        const qualityValue = document.getElementById('qualityValue');
-        const compressButton = document.getElementById('compressButton');
-        const resultDiv = document.getElementById('result');
+        let currentScaleFactor = 1;
+        let originalImage = null;
 
-        qualityInput.addEventListener('input', () => {
-            qualityValue.textContent = qualityInput.value;
-        });
-
-        compressButton.addEventListener('click', () => {
-            const file = uploadImage.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        // Create a canvas element to draw the image
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-
-                        // Calculate scaled dimensions
-                        const maxWidth = 600;
-                        const scale = Math.min(maxWidth / img.width, 1);
-                        canvas.width = img.width * scale;
-                        canvas.height = img.height * scale;
-
-                        // Draw the image on the canvas
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                        // Get the compression quality
-                        const quality = qualityInput.value;
-
-                        // Compress the image and get the data URL
-                        const compressedImageURL = canvas.toDataURL('image/jpeg', quality);
-
-                        // Display the compressed image and download link
-                        resultDiv.innerHTML = `
-                            <h2>压缩后的图片:</h2>
-                            <img src="${compressedImageURL}" alt="Compressed Image">
-                            <a href="${compressedImageURL}" download="compressed_image.jpg" class="download-button">下载图片</a>
-                        `;
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                resultDiv.innerHTML = '<p>请上传图片文件。</p>';
+        function loadImage() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length === 0) {
+                alert('请选择一张图片');
+                return;
             }
-        });
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                originalImage = new Image();
+                originalImage.onload = function() {
+                    currentScaleFactor = 1; // Reset scale
+                    updateScaleFactorInput();
+                    displayImage();
+                };
+                originalImage.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function adjustScale(factor) {
+            currentScaleFactor = Math.max(0.1, currentScaleFactor + factor);
+            updateScaleFactorInput();
+            displayImage();
+        }
+
+        function updateScaleFactorInput() {
+            document.getElementById('scaleFactor').value = Math.round(currentScaleFactor * 100);
+        }
+
+        function displayImage() {
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = '';
+
+            if (originalImage) {
+                const maxPreviewSize = 600; // 设定更大的最大预览大小
+                let scaledWidth = originalImage.width * currentScaleFactor;
+                let scaledHeight = originalImage.height * currentScaleFactor;
+
+                // 限制最大预览尺寸
+                if (scaledWidth > maxPreviewSize || scaledHeight > maxPreviewSize) {
+                    const scale = Math.min(maxPreviewSize / scaledWidth, maxPreviewSize / scaledHeight);
+                    scaledWidth *= scale;
+                    scaledHeight *= scale;
+                }
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = scaledWidth;
+                canvas.height = scaledHeight;
+                ctx.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight);
+
+                resultContainer.appendChild(canvas);
+            }
+        }
+
+        function cropImage() {
+            if (!originalImage) {
+                alert('请先选择图片并调整大小。');
+                return;
+            }
+
+            const canvas = document.querySelector('#result canvas');
+            if (!canvas) {
+                alert('无法获取裁剪后的图像。');
+                return;
+            }
+
+            const croppedImageUrl = canvas.toDataURL();
+            const link = document.createElement('a');
+            link.href = croppedImageUrl;
+            link.download = 'cropped_image.png';
+            link.click();
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图像标注工具</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"], input[type="range"], select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .result canvas {
+            max-width: 100%;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .download-button:hover {
+            background-color: #45a049;
+        }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
+    <div class="container">
+        <h1>图像标注工具</h1>
+        <div class="form-group">
+            <label for="uploadImage">上传图片:</label>
+            <input type="file" id="uploadImage" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label for="annotationType">标注类型:</label>
+            <select id="annotationType">
+                <option value="text">文字标注</option>
+                <option value="shape">图形标注</option>
+                <option value="draw">涂鸦</option>
+            </select>
+        </div>
+        <div id="textOptions" style="display: none;">
+            <label for="textInput">文本:</label>
+            <input type="text" id="textInput" placeholder="输入文本">
+            <label for="textColor">文本颜色:</label>
+            <input type="color" id="textColor" value="#000000">
+            <label for="textSize">文本大小:</label>
+            <input type="range" id="textSize" min="10" max="100" value="30">
+            <p>大小: <span id="textSizeValue">30px</span></p>
+        </div>
+        <div id="shapeOptions" style="display: none;">
+            <label for="shapeType">形状:</label>
+            <select id="shapeType">
+                <option value="rect">矩形</option>
+                <option value="circle">圆形</option>
+            </select>
+            <label for="shapeColor">形状颜色:</label>
+            <input type="color" id="shapeColor" value="#FF0000">
+            <label for="shapeBorder">边框宽度:</label>
+            <input type="range" id="shapeBorder" min="1" max="20" value="2">
+            <p>边框宽度: <span id="shapeBorderValue">2px</span></p>
+            <label for="shapeFill">填充:</label>
+            <select id="shapeFill">
+                <option value="solid">实心</option>
+                <option value="hollow">空心</option>
+            </select>
+        </div>
+        <div id="drawOptions" style="display: none;">
+            <label for="drawColor">涂鸦颜色:</label>
+            <input type="color" id="drawColor" value="#000000">
+            <label for="drawSize">涂鸦大小:</label>
+            <input type="range" id="drawSize" min="1" max="50" value="5">
+            <p>大小: <span id="drawSizeValue">5px</span></p>
+        </div>
+        <button id="finishButton">完成标注</button>
+        <div id="result" class="result"></div>
+    </div>
+    <script>
+        const uploadImage = document.getElementById('uploadImage');
+        const annotationType = document.getElementById('annotationType');
+        const textOptions = document.getElementById('textOptions');
+        const shapeOptions = document.getElementById('shapeOptions');
+        const drawOptions = document.getElementById('drawOptions');
+        const finishButton = document.getElementById('finishButton');
+        const resultDiv = document.getElementById('result');
+        let canvas, ctx, img;
+        let startX, startY, isDrawing = false;
+
+        // Handle image upload
+        uploadImage.addEventListener('change', () => {
+            const file = uploadImage.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    img = new Image();
+                    img.onload = () => {
+                        initializeCanvas(img);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle annotation type change
+        annotationType.addEventListener('change', () => {
+            const value = annotationType.value;
+            textOptions.style.display = value === 'text' ? 'block' : 'none';
+            shapeOptions.style.display = value === 'shape' ? 'block' : 'none';
+            drawOptions.style.display = value === 'draw' ? 'block' : 'none';
+        });
+
+        // Handle text size input
+        document.getElementById('textSize').addEventListener('input', function() {
+            document.getElementById('textSizeValue').textContent = `${this.value}px`;
+        });
+
+        // Handle shape border width input
+        document.getElementById('shapeBorder').addEventListener('input', function() {
+            document.getElementById('shapeBorderValue').textContent = `${this.value}px`;
+        });
+
+        // Handle draw size input
+        document.getElementById('drawSize').addEventListener('input', function() {
+            document.getElementById('drawSizeValue').textContent = `${this.value}px`;
+        });
+
+        function initializeCanvas(image) {
+            if (canvas) {
+                canvas.remove();
+            }
+            canvas = document.createElement('canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0);
+            resultDiv.innerHTML = '';
+            resultDiv.appendChild(canvas);
+
+            // Canvas event listeners
+            canvas.addEventListener('mousedown', (e) => {
+                if (annotationType.value === 'shape') {
+                    startX = e.offsetX;
+                    startY = e.offsetY;
+                    isDrawing = true;
+                } else if (annotationType.value === 'draw') {
+                    isDrawing = true;
+                    draw(e.offsetX, e.offsetY);
+                }
+            });
+
+            canvas.addEventListener('mouseup', (e) => {
+                if (annotationType.value === 'shape' && isDrawing) {
+                    drawShape(startX, startY, e.offsetX, e.offsetY);
+                    isDrawing = false;
+                } else if (annotationType.value === 'draw') {
+                    isDrawing = false;
+                    ctx.beginPath(); // End the current path
+                }
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (annotationType.value === 'draw' && isDrawing) {
+                    draw(e.offsetX, e.offsetY);
+                }
+            });
+
+            canvas.addEventListener('click', (e) => {
+                if (annotationType.value === 'text') {
+                    addText(e.offsetX, e.offsetY);
+                }
+            });
+        }
+
+        function draw(x, y) {
+            ctx.lineWidth = document.getElementById('drawSize').value;
+            ctx.strokeStyle = document.getElementById('drawColor').value;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function addText(x, y) {
+            const text = document.getElementById('textInput').value;
+            const color = document.getElementById('textColor').value;
+            const size = document.getElementById('textSize').value;
+            ctx.font = `${size}px Arial`;
+            ctx.fillStyle = color;
+            ctx.fillText(text, x, y);
+        }
+
+        function drawShape(x1, y1, x2, y2) {
+            const shape = document.getElementById('shapeType').value;
+            const color = document.getElementById('shapeColor').value;
+            const borderWidth = document.getElementById('shapeBorder').value;
+            const fillType = document.getElementById('shapeFill').value;
+            const width = x2 - x1;
+            const height = y2 - y1;
+
+            ctx.fillStyle = color;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = borderWidth;
+            ctx.beginPath();
+            if (shape === 'rect') {
+                ctx.rect(x1, y1, width, height);
+            } else if (shape === 'circle') {
+                const radius = Math.sqrt(width * width + height * height) / 2;
+                const centerX = x1 + width / 2;
+                const centerY = y1 + height / 2;
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            }
+            if (fillType === 'solid') {
+                ctx.fill();
+            } else if (fillType === 'hollow') {
+                ctx.stroke();
+            }
+        }
+
+        finishButton.addEventListener('click', () => {
+            if (canvas) {
+                const downloadURL = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = downloadURL;
+                link.download = 'annotated_image.png';
+                link.click();
+            } else {
+                alert('请先上传图片并进行标注');
+            }
+        });
+    </script>
+</body>
+</html>
