@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件批量重命名工具</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        input[type="file"], input[type="text"], select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .btn-secondary {
+            background-color: #007bff;
+        }
+        .btn-secondary:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .input-group .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        .input-group .button-group button {
+            flex: 1;
+            margin: 0 5px;
+        }
+        .result {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .file-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        .file-list li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .file-list input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .file-list li button {
+            margin-left: 10px;
+            width: auto;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .file-list li button:hover {
+            background-color: #0056b3;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        body.dark-mode input, body.dark-mode select{
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #3A3A3A;
+            border-color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
+
+    <div class="container">
+        <h1>文件批量重命名工具</h1>
+        <div class="input-group">
+            <label for="fileInput">选择要重命名的文件 (支持多文件上传)</label>
+            <input type="file" id="fileInput" multiple>
+        </div>
+        <div class="input-group">
+            <label for="namePrefix">新文件名前缀:</label>
+            <input type="text" id="namePrefix" placeholder="输入新的前缀">
+        </div>
+        <div class="input-group">
+            <label for="nameSuffix">新文件名后缀:</label>
+            <input type="text" id="nameSuffix" placeholder="输入新的后缀 (例如: _v2)">
+        </div>
+        <div class="input-group">
+            <label for="renameMode">重命名模式:</label>
+            <select id="renameMode">
+                <option value="sequential">按序号</option>
+                <option value="timestamp">按时间戳</option>
+                <option value="random">随机</option>
+                <option value="custom">自定义</option>
+            </select>
+        </div>
+        <div class="input-group" id="customPatternGroup" style="display: none;">
+            <label for="customPattern">自定义重命名模式:</label>
+            <input type="text" id="customPattern" placeholder="输入自定义模式，例如: file_{{index}}">
+        </div>
+        <div class="input-group">
+            <label for="zipName">压缩文件名称:</label>
+            <input type="text" id="zipName" placeholder="输入压缩文件名称">
+        </div>
+        <div class="input-group button-group">
+            <button onclick="renameFiles()">批量重命名</button>
+            <button class="btn-secondary" onclick="selectAllFiles()">全选</button>
+            <button class="btn-danger" onclick="deselectAllFiles()">全不选</button>
+            <button onclick="createZipFile()">下载所有文件为ZIP</button>
+            <button onclick="downloadSelectedFiles()">下载选中的文件</button>
+        </div>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        let filesToProcess = [];
+        let renamedFiles = [];
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            filesToProcess = Array.from(event.target.files);
+            renamedFiles = [];
+        });
+
+        function displayFiles() {
+            const result = document.getElementById('result');
+            result.innerHTML = ''; // Clear previous results
+            result.style.display = 'block';
+            
+            if (renamedFiles.length === 0) {
+                result.innerHTML = '<p style="color: red;">没有文件需要显示。</p>';
+                return;
+            }
+
+            const fileList = document.createElement('ul');
+            fileList.className = 'file-list';
+
+            renamedFiles.forEach((fileData, index) => {
+                const listItem = document.createElement('li');
+                const fileNameText = document.createElement('span');
+                fileNameText.textContent = fileData.newName;
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.dataset.index = index;
+
+                const downloadButton = document.createElement('button');
+                downloadButton.textContent = '下载';
+                downloadButton.onclick = function() {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(fileData.originalFile);
+                    a.download = fileData.newName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(a.href);
+                };
+
+                listItem.appendChild(checkbox);
+                listItem.appendChild(fileNameText);
+                listItem.appendChild(downloadButton);
+                fileList.appendChild(listItem);
+            });
+
+            result.appendChild(fileList);
+        }
+
+        function renameFiles() {
+            if (filesToProcess.length === 0) {
+                alert('请先选择文件。');
+                return;
+            }
+
+            const prefix = document.getElementById('namePrefix').value;
+            const suffix = document.getElementById('nameSuffix').value;
+            const renameMode = document.getElementById('renameMode').value;
+            const customPattern = document.getElementById('customPattern').value;            renamedFiles = filesToProcess.map((file, index) => {
+                let newFileName;
+                const fileExt = file.name.slice(file.name.lastIndexOf('.'));
+
+                switch (renameMode) {
+                    case 'sequential':
+                        newFileName = `${prefix}${index + 1}${suffix}${fileExt}`;
+                        break;
+                    case 'timestamp':
+                        newFileName = `${prefix}${Date.now()}${suffix}${fileExt}`;
+                        break;
+                    case 'random':
+                        newFileName = `${prefix}${Math.random().toString(36).substring(2, 8)}${suffix}${fileExt}`;
+                        break;
+                    case 'custom':
+                        newFileName = customPattern.replace('{{index}}', index + 1).replace('{{ext}}', fileExt);
+                        break;
+                    default:
+                        newFileName = `${prefix}${file.name}${suffix}`;
+                }
+
+                return { originalFile: file, newName: newFileName };
+            });
+
+            displayFiles();
+        }
+
+        function createZipFile() {
+            if (renamedFiles.length === 0) {
+                alert('请先选择文件并重命名。');
+                return;
+            }
+
+            const zip = new JSZip();
+            const zipName = document.getElementById('zipName').value || 'files';
+
+            renamedFiles.forEach(fileData => {
+                zip.file(fileData.newName, fileData.originalFile);
+            });
+
+            zip.generateAsync({ type: 'blob' })
+                .then(function(content) {
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${zipName}.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                })
+                .catch(function(e) {
+                    alert('创建ZIP文件时发生错误。');
+                    console.error(e);
+                });
+        }
+
+        function selectAllFiles() {
+            const checkboxes = document.querySelectorAll('.file-list input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+        }
+
+        function deselectAllFiles() {
+            const checkboxes = document.querySelectorAll('.file-list input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+        }
+
+        function downloadSelectedFiles() {
+            const selectedFiles = Array.from(document.querySelectorAll('.file-list input[type="checkbox"]:checked'))
+                .map(checkbox => parseInt(checkbox.dataset.index))
+                .map(index => renamedFiles[index]);
+
+            if (selectedFiles.length === 0) {
+                alert('请选择要下载的文件。');
+                return;
+            }
+
+            const zip = new JSZip();
+            const zipName = prompt('请输入压缩文件的名称:', 'selected_files') || 'selected_files';
+
+            selectedFiles.forEach(fileData => {
+                zip.file(fileData.newName, fileData.originalFile);
+            });
+
+            zip.generateAsync({ type: 'blob' })
+                .then(function(content) {
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${zipName}.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                })
+                .catch(function(e) {
+                    alert('创建ZIP文件时发生错误。');
+                    console.error(e);
+                });
+        }
+
+        document.getElementById('renameMode').addEventListener('change', function() {
+            const customPatternGroup = document.getElementById('customPatternGroup');
+            if (this.value === 'custom') {
+                customPatternGroup.style.display = 'block';
+            } else {
+                customPatternGroup.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

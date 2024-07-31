@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线解压缩文件工具</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"], input[type="text"], select, button {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: calc(100% - 22px); /* Adjust width for padding and border */
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .button-group button {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            min-width: 100px; /* 缩短按钮宽度 */
+        }
+        .btn-primary {
+            background-color: #4caf50;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+        .btn-secondary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .result {
+            margin-top: 20px;
+            width: 100%;
+            text-align: left;
+            display: none;
+        }
+        .file-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        .file-list li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .file-list input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .file-list li button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            min-width: 80px; /* 缩短按钮宽度 */
+        }
+        .file-list li button:hover {
+            background-color: #0056b3;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        body.dark-mode input, body.dark-mode select, body.dark-mode button {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
+
+    <div class="container">
+        <h1>在线解压缩文件工具</h1>
+        <div class="input-group">
+            <label for="fileInput">选择压缩文件</label>
+            <input type="file" id="fileInput" accept=".zip,.rar,.7z,.tar,.gz">
+        </div>
+        <button class="btn-primary" onclick="unzipFile()">解压文件</button>
+        <div id="result" class="result"></div>
+    </div>
+    <script src="../script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.rawgit.com/Stuk/jszip-utils/0.0.2/dist/jszip-utils.min.js"></script>
+    <script>
+        let zip;
+
+        function unzipFile() {
+            const fileInput = document.getElementById('fileInput');
+            const result = document.getElementById('result');
+            result.innerHTML = ''; // Clear previous results
+
+            if (fileInput.files.length === 0) {
+                result.innerHTML = '<p style="color: red;">请先选择要解压的文件。</p>';
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            JSZip.loadAsync(file)
+                .then(function(zipContent) {
+                    zip = zipContent;
+                    const fileList = document.createElement('ul');
+                    fileList.className = 'file-list';
+                    result.appendChild(fileList);
+
+                    Object.keys(zip.files).forEach(function(filename) {
+                        const listItem = document.createElement('li');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.value = filename;
+                        const label = document.createElement('label');
+                        label.textContent = filename;
+
+                        const downloadButton = document.createElement('button');
+                        downloadButton.textContent = '下载';
+                        downloadButton.onclick = function() {
+                            zip.files[filename].async('blob').then(function(blob) {
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+                            });
+                        };
+
+                        listItem.appendChild(checkbox);
+                        listItem.appendChild(label);
+                        listItem.appendChild(downloadButton);
+                        fileList.appendChild(listItem);
+                    });
+
+                    addSelectAllFeature();
+                    result.style.display = 'block';
+                })
+                .catch(function(e) {
+                    result.innerHTML = '<p style="color: red;">解压文件时发生错误。</p>';
+                    console.error(e);
+                });
+        }
+
+        function addSelectAllFeature() {
+            const result = document.getElementById('result');
+            const selectAllGroup = document.createElement('div');
+            selectAllGroup.className = 'button-group';
+
+            const selectAllButton = document.createElement('button');
+            selectAllButton.className = 'btn-secondary';
+            selectAllButton.textContent = '全选';
+            selectAllButton.onclick = function() {
+                document.querySelectorAll('.file-list input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+            };
+
+            const deselectAllButton = document.createElement('button');
+            deselectAllButton.className = 'btn-secondary';
+            deselectAllButton.textContent = '全不选';
+            deselectAllButton.onclick = function() {
+                document.querySelectorAll('.file-list input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            };
+
+            const downloadSelectedButton = document.createElement('button');
+            downloadSelectedButton.className = 'btn-secondary';
+            downloadSelectedButton.textContent = '下载选中的文件';
+            downloadSelectedButton.onclick = function() {
+                document.querySelectorAll('.file-list input[type="checkbox"]:checked').forEach(checkbox => {
+                    const filename = checkbox.value;
+                    const file = zip.files[filename];
+                    file.async('blob').then(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    });
+                });
+            };
+
+            selectAllGroup.appendChild(selectAllButton);
+            selectAllGroup.appendChild(deselectAllButton);
+            selectAllGroup.appendChild(downloadSelectedButton);
+
+            result.insertBefore(selectAllGroup, result.firstChild);
+        }
+    </script>
+</body>
+</html>
