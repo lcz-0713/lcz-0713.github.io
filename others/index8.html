@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身高预测计算器</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .bo {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin: 5px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            text-align: center;
+            background: #e0ffe0;
+            border-radius: 8px;
+            border: 2px solid #4caf50;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode input {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .result {
+            background: #333;
+            border-color: #4caf50;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
+    </a>
+    <div class="container">
+        <h1>身高预测计算器</h1>
+        <div class="form-group">
+            <label for="fatherHeight">父亲身高 (cm):</label>
+            <input type="number" id="fatherHeight" placeholder="请输入父亲身高">
+        </div>
+        <div class="form-group">
+            <label for="motherHeight">母亲身高 (cm):</label>
+            <input type="number" id="motherHeight" placeholder="请输入母亲身高">
+        </div>
+        <div class="form-group">
+            <label for="childGender">子女性别:</label>
+            <select id="childGender">
+                <option value="male">男孩</option>
+                <option value="female">女孩</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="formula">选择公式:</label>
+            <select id="formula">
+                <option value="1">公式 1: 男孩 = ((父亲 + 母亲) × 1.08) / 2; 女孩 = (父亲 × 0.923 + 母亲) / 2</option>
+                <option value="2">公式 2: 男孩 = ((父亲 + 母亲) + 13) / 2; 女孩 = ((父亲 + 母亲) - 13) / 2</option>
+                <option value="3">公式 3: 男孩 = (父亲 + 母亲 + 10) / 2; 女孩 = (父亲 + 母亲 - 10) / 2</option>
+            </select>
+        </div>
+        <div class="bo">
+            <button onclick="calculateHeight()">计算预测身高</button>
+        </div>
+        <div id="result" class="result">
+            <p>预测身高: <span id="heightResult" class="highlight">请输入数据并计算</span></p>
+        </div>
+    </div>
+    <script>
+        function calculateHeight() {
+            const fatherHeight = parseFloat(document.getElementById('fatherHeight').value);
+            const motherHeight = parseFloat(document.getElementById('motherHeight').value);
+            const childGender = document.getElementById('childGender').value;
+            const formula = document.getElementById('formula').value;
+
+            if (isNaN(fatherHeight) || isNaN(motherHeight)) {
+                document.getElementById('heightResult').innerText = '请输入有效的身高数据';
+                return;
+            }
+
+            let predictedHeight;
+
+            switch (formula) {
+                case '1':
+                    if (childGender === 'male') {
+                        // 公式 1: 男孩 = ((父亲 + 母亲) × 1.08) / 2
+                        predictedHeight = ((fatherHeight + motherHeight) * 1.08) / 2;
+                    } else {
+                        // 公式 1: 女孩 = (父亲 × 0.923 + 母亲) / 2
+                        predictedHeight = (fatherHeight * 0.923 + motherHeight) / 2;
+                    }
+                    break;
+                case '2':
+                    if (childGender === 'male') {
+                        // 公式 2: 男孩 = ((父亲 + 母亲) + 13) / 2
+                        predictedHeight = ((fatherHeight + motherHeight) + 13) / 2;
+                    } else {
+                        // 公式 2: 女孩 = ((父亲 + 母亲) - 13) / 2
+                        predictedHeight = ((fatherHeight + motherHeight) - 13) / 2;
+                    }
+                    break;
+                case '3':
+                    if (childGender === 'male') {
+                        // 公式 3: 男孩 = (父亲 + 母亲 + 10) / 2
+                        predictedHeight = (fatherHeight + motherHeight + 10) / 2;
+                    } else {
+                        // 公式 3: 女孩 = (父亲 + 母亲 - 10) / 2
+                        predictedHeight = (fatherHeight + motherHeight - 10) / 2;
+                    }
+                    break;
+                default:
+                    document.getElementById('heightResult').innerText = '选择的公式无效';
+                    return;
+            }
+
+            document.getElementById('heightResult').innerText = `${predictedHeight.toFixed(2)} cm`;
+        }
+    </script>
+</body>
+</html>

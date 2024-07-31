@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elo 等级分计算器</title>
-    <script src="../script.js"></script>
     <link rel="stylesheet" href="../dark-mode.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="../button.css">
@@ -100,7 +99,7 @@
             <p>玩家2 新等级分: <span id="newPlayer2Rating" class="highlight">0</span></p>
         </div>
     </div>
-
+    <script src="../script.js"></script>
     <script>
         function calculateElo() {
             const player1Rating = parseFloat(document.getElementById('player1Rating').value) || 0;
