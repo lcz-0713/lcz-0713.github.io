@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>视频解析工具</title>
+    <title>在线基础代谢率(BMR)计算器</title>
     <link rel="stylesheet" href="../dark-mode.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="../button.css">
@@ -23,20 +23,29 @@
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 8px;
-            text-align: center;
         }
         h1 {
+            text-align: center;
             margin-bottom: 20px;
         }
-        input {
-            width: 80%;
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
             padding: 10px;
-            margin: 10px 0;
             font-size: 1em;
             border: 1px solid #ddd;
             border-radius: 5px;
+            box-sizing: border-box;
         }
         button {
+            display: block;
+            width: 100%;
             padding: 10px;
             font-size: 1em;
             border: none;
@@ -50,7 +59,7 @@
             background-color: #45a049;
         }
         .result {
-            font-size: 1em;
+            font-size: 1.5em;
             margin: 20px 0;
             padding: 20px;
             text-align: center;
@@ -58,12 +67,9 @@
             border-radius: 10px;
             border: 2px solid #4caf50;
         }
-        .result img {
-            max-width: 100%;
-            border-radius: 8px;
-        }
-        .error {
-            color: red;
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
         }
         body.dark-mode textarea {
             background-color: #333;
@@ -94,50 +100,106 @@
         <i class="fa fa-adjust" style="font-size:48px;"></i>  
     </a>
     <div class="container">
-        <h1>视频解析工具</h1>
-        <input type="text" id="videoURL" placeholder="输入视频链接">
-        <button onclick="parseVideo()">解析视频</button>
-        <div id="result" class="result"></div>
+        <h1>在线基础代谢率(BMR)计算器</h1>
+        <div class="form-group">
+            <label for="age">年龄 (岁):</label>
+            <input type="number" id="age" placeholder="请输入年龄">
+        </div>
+        <div class="form-group">
+            <label for="weight">体重 (公斤):</label>
+            <input type="number" id="weight" placeholder="请输入体重">
+        </div>
+        <div class="form-group">
+            <label for="height">身高 (厘米):</label>
+            <input type="number" id="height" placeholder="请输入身高">
+        </div>
+        <div class="form-group">
+            <label for="gender">性别:</label>
+            <select id="gender">
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="activity">活动水平:</label>
+            <select id="activity">
+                <option value="sedentary">久坐</option>
+                <option value="light">轻度活动</option>
+                <option value="moderate">中度活动</option>
+                <option value="active">高度活动</option>
+            </select>
+        </div>
+        <button onclick="calculateBMR()">计算 BMR 和 TDEE</button>
+        <div id="result" class="result">
+            <p>基础代谢率(BMR): <span id="bmrResult" class="highlight">0.00</span> 卡路里/天</p>
+            <p>TDEE: <span id="tdeeResult" class="highlight">0.00</span> 卡路里/天</p>
+            <p>建议: <span id="activitySuggestion" class="highlight">无</span></p>
+        </div>
     </div>
     <script src="../script.js"></script>
     <script>
-        function parseVideo() {
-            const videoURL = document.getElementById('videoURL').value;
-            const resultDiv = document.getElementById('result');
+        function calculateBMR() {
+            const age = parseInt(document.getElementById('age').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const gender = document.getElementById('gender').value;
+            const activityLevel = document.getElementById('activity').value;
 
-            if (!videoURL) {
-                resultDiv.innerHTML = '<p class="error">请输入有效的视频链接。</p>';
+            if (isNaN(age) || isNaN(weight) || isNaN(height)) {
+                document.getElementById('bmrResult').innerText = '错误的输入';
+                document.getElementById('tdeeResult').innerText = '错误的输入';
+                document.getElementById('activitySuggestion').innerText = '无';
                 return;
             }
 
-            // 这里可以根据需要添加对不同视频平台链接的解析逻辑
-            // 例如 YouTube、Vimeo 等等
-            const videoId = extractVideoId(videoURL);
+            let bmr;
 
-            if (!videoId) {
-                resultDiv.innerHTML = '<p class="error">无法解析视频链接。</p>';
-                return;
+            if (gender === 'male') {
+                bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
             }
 
-            // 示例：假设是 YouTube 视频
-            const videoInfo = {
-                title: "示例视频标题",
-                description: "这是一个示例视频的描述。",
-                thumbnail: "https://via.placeholder.com/480x360?text=Video+Thumbnail",
-                url: `https://www.youtube.com/watch?v=${videoId}`
-            };
+            let tdee;
+            switch (activityLevel) {
+                case 'sedentary':
+                    tdee = bmr * 1.2;
+                    break;
+                case 'light':
+                    tdee = bmr * 1.375;
+                    break;
+                case 'moderate':
+                    tdee = bmr * 1.55;
+                    break;
+                case 'active':
+                    tdee = bmr * 1.725;
+                    break;
+                default:
+                    tdee = bmr;
+            }
 
-            resultDiv.innerHTML = `
-                <h2>${videoInfo.title}</h2>
-                <img src="${videoInfo.thumbnail}" alt="Video Thumbnail">
-                <p>${videoInfo.description}</p>
-                <p><a href="${videoInfo.url}" target="_blank">观看视频</a></p>
-            `;
-        }
+            document.getElementById('bmrResult').innerText = bmr.toFixed(2);
+            document.getElementById('tdeeResult').innerText = tdee.toFixed(2);
 
-        function extractVideoId(url) {
-            const urlParams = new URLSearchParams(new URL(url).search);
-            return urlParams.get('v');
+            let suggestion;
+            switch (activityLevel) {
+                case 'sedentary':
+                    suggestion = '建议增加日常活动量以提高能量消耗。';
+                    break;
+                case 'light':
+                    suggestion = '保持当前活动量，适度增加锻炼。';
+                    break;
+                case 'moderate':
+                    suggestion = '良好的活动水平，继续保持。';
+                    break;
+                case 'active':
+                    suggestion = '非常积极的生活方式，注意均衡饮食。';
+                    break;
+                default:
+                    suggestion = '活动水平未知。';
+            }
+
+            document.getElementById('activitySuggestion').innerText = suggestion;
         }
     </script>
 </body>
