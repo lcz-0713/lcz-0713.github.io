@@ -6,6 +6,8 @@
     <title>猜数字游戏</title>
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="../button.css">
+    <link rel="stylesheet" href="../dark-mode.css">
+    <script src="../footer.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,8 +72,7 @@
             border-color: #666;
         }
     </style>
-    <script src="../script.js"></script>
-    <link rel="stylesheet" href="../dark-mode.css">
+
 </head>
 <body>
     <a class="home-button" href="../index.html"> 
@@ -87,7 +88,7 @@
         <button onclick="makeGuess()">提交猜测</button>
         <div id="gameResult" class="result"></div>
     </div>
-
+    <script src="../script.js"></script>
     <script>
         let targetNumber = Math.floor(Math.random() * 100) + 1;
         let attempts = 0;

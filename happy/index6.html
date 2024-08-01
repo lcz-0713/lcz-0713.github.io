@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线笔记本</title>
+    <link rel="stylesheet" href="../dark-mode.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <script src="../footer.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px; /* Adjusted width */
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        textarea, input[type="text"] {
+            width: calc(100% - 22px); /* Adjusted width for padding */
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+        textarea {
+            height: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .note-list {
+            margin-bottom: 20px;
+        }
+        .note-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .note-item:hover {
+            background-color: #f0f0f0;
+        }
+        .note-item .note-title {
+            font-weight: bold;
+        }
+        .note-item .note-date {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: calc(100% - 22px);
+        }
+        body.dark-mode textarea,
+        body.dark-mode input[type="text"] {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+        body.dark-mode .note-list:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
+    </a>
+    <div class="container">
+        <h1>在线笔记本</h1>
+
+        <div class="section">
+            <h2>新建笔记</h2>
+            <button onclick="createNewNote()">新建笔记</button>
+        </div>
+
+        <div class="section" id="noteEditor" style="display: none;">
+            <h2>编辑笔记</h2>
+            <input type="text" id="noteTitle" placeholder="笔记标题">
+            <textarea id="noteContent" placeholder="在此输入笔记内容..."></textarea>
+            <button onclick="saveNote()">保存笔记</button>
+            <button onclick="deleteNote()">删除笔记</button>
+        </div>
+
+        <div class="section">
+            <h2>搜索笔记</h2>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="搜索笔记..." oninput="filterNotes()">
+            </div>
+            <h2>笔记列表</h2>
+            <div id="noteList" class="note-list">
+                <!-- 笔记列表将动态生成 -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>备份和恢复</h2>
+            <button onclick="backupData()">备份数据</button>
+            <button onclick="restoreData()">恢复数据</button>
+            <input type="file" id="backupFile" style="display: none;" />
+        </div>
+    </div>
+    <script src="../script.js"></script>
+    <script>
+        let notes = JSON.parse(localStorage.getItem('notes')) || {};
+        let currentNoteId = null;
+
+        function renderNoteList() {
+            const noteList = document.getElementById('noteList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            noteList.innerHTML = '';
+            for (const [id, note] of Object.entries(notes)) {
+                if (note.title.toLowerCase().includes(searchTerm) || note.content.toLowerCase().includes(searchTerm)) {
+                    const noteItem = document.createElement('div');
+                    noteItem.classList.add('note-item');
+                    noteItem.dataset.id = id;
+                    noteItem.innerHTML = `
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-date">${note.date}</div>
+                    `;
+                    noteItem.onclick = () => editNote(id);
+                    noteList.appendChild(noteItem);
+                }
+            }
+        }
+
+        function createNewNote() {
+            document.getElementById('noteEditor').style.display = 'block';
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            currentNoteId = null;
+        }
+
+        function editNote(id) {
+            currentNoteId = id;
+            document.getElementById('noteEditor').style.display = 'block';
+            document.getElementById('noteTitle').value = notes[id].title;
+            document.getElementById('noteContent').value = notes[id].content;
+        }
+
+        function saveNote() {
+            const title = document.getElementById('noteTitle').value;
+            const content = document.getElementById('noteContent').value;
+            if (!title || !content) {
+                alert('标题和内容不能为空');
+                return;
+            }
+
+            const date = new Date().toLocaleString();
+            if (currentNoteId) {
+                notes[currentNoteId] = { title, content, date };
+            } else {
+                const id = Date.now().toString();
+                notes[id] = { title, content, date };
+            }
+
+            localStorage.setItem('notes', JSON.stringify(notes));
+            renderNoteList();
+            document.getElementById('noteEditor').style.display = 'none';
+        }
+
+        function deleteNote() {
+            if (currentNoteId && confirm('确定要删除这条笔记吗？')) {
+                delete notes[currentNoteId];
+                localStorage.setItem('notes', JSON.stringify(notes));
+                renderNoteList();
+                document.getElementById('noteEditor').style.display = 'none';
+            }
+        }
+
+        function backupData() {
+            const blob = new Blob([JSON.stringify(notes)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'backup.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function restoreData() {
+            const input = document.getElementById('backupFile');
+            input.click();
+            input.addEventListener('change', function() {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    notes = JSON.parse(e.target.result);
+                    localStorage.setItem('notes', JSON.stringify(notes));
+                    renderNoteList();
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        function filterNotes() {
+            renderNoteList();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNoteList();
+        });
+    </script>
+</body>
+</html>
