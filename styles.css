@@ -179,19 +179,3 @@ h3 {
         text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
     }
 }
-footer {
-    color: #807b7b;
-    text-align: center;
-    padding: 5px 0;
-    bottom: 0;
-    width: 100%;
-    font-size: 15px;
-}
-footer a {
-    color: #61dafb;
-    text-decoration: none;
-}
-.footer-content {
-    max-width: 1200px; 
-    margin: 0 auto;
-}

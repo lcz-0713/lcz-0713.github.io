@@ -58,3 +58,6 @@ body.dark-mode footer {
     width: 100%;
     font-size: 15px;
 }
+body.dark-mode .social-icons a {
+    color: #fff; 
+}
