@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>重量转换工具</title>
+    <title>阴历阳历转换器</title>
     <link rel="stylesheet" href="../dark-mode.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="../button.css">
@@ -18,7 +18,7 @@
             color: #333;
         }
         .container {
-            max-width: 400px;
+            max-width: 500px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -72,6 +72,11 @@
             font-weight: bold;
             color: #4caf50;
         }
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
         body.dark-mode input {
             background-color: #333;
             color: #fff;
@@ -96,74 +101,76 @@
         <i class="fa fa-adjust" style="font-size:48px;"></i>  
     </a>
     <div class="container">
-        <h1>重量转换工具</h1>
+        <h1>阴历阳历转换器</h1>
         <div class="form-group">
-            <label for="weight">输入重量:</label>
-            <input type="number" id="weight" placeholder="请输入重量" step="0.01">
+            <label for="gregorianDate">公历日期 (YYYY-MM-DD):</label>
+            <input type="date" id="gregorianDate">
         </div>
         <div class="form-group">
-            <label for="fromUnit">从:</label>
-            <select id="fromUnit">
-                <option value="kg">千克 (kg)</option>
-                <option value="g">克 (g)</option>
-                <option value="mg">毫克 (mg)</option>
-                <option value="lb">磅 (lb)</option>
-                <option value="oz">盎司 (oz)</option>
-            </select>
+            <label for="lunarDate">农历日期 (YYYY-MM-DD):</label>
+            <input type="text" id="lunarDate" placeholder="请输入农历日期">
         </div>
-        <div class="form-group">
-            <label for="toUnit">到:</label>
-            <select id="toUnit">
-                <option value="kg">千克 (kg)</option>
-                <option value="g">克 (g)</option>
-                <option value="mg">毫克 (mg)</option>
-                <option value="lb">磅 (lb)</option>
-                <option value="oz">盎司 (oz)</option>
-            </select>
-        </div>
-        <button onclick="convertWeight()">转换</button>
+        <button onclick="convertToLunar()">公历转农历</button>
+        <button onclick="convertToGregorian()">农历转公历</button>
         <div id="result" class="result">
-            <p>结果: <span id="convertedWeight" class="highlight">0</span> <span id="convertedUnit" class="highlight">单位</span></p>
+            <p>转换结果:</p>
+            <p>公历: <span id="gregorianResult" class="highlight">无</span></p>
+            <p>农历: <span id="lunarResult" class="highlight">无</span></p>
         </div>
     </div>
-    <script src="../script.js"></script>
-
+    <!-- 引入 lunar-calendar 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/lunar-calendar@1.0.3/dist/lunar-calendar.min.js"></script>
     <script>
-        function convertWeight() {
-            const weight = parseFloat(document.getElementById('weight').value);
-            const fromUnit = document.getElementById('fromUnit').value;
-            const toUnit = document.getElementById('toUnit').value;
-
-            if (isNaN(weight)) {
-                document.getElementById('convertedWeight').innerText = '错误的输入';
-                document.getElementById('convertedUnit').innerText = '';
+        function convertToLunar() {
+            const gregorianDate = document.getElementById('gregorianDate').value;
+            if (!gregorianDate) {
+                alert('请先输入公历日期');
                 return;
             }
 
-            const conversionRates = {
-                'kg': 1,
-                'g': 1000,
-                'mg': 1000000,
-                'lb': 2.20462,
-                'oz': 35.274
-            };
+            const date = new Date(gregorianDate);
+            const lunar = LunarCalendar.solarToLunar(date);
 
-            // Convert input to kilograms
-            const weightInKg = weight / conversionRates[fromUnit];
-            // Convert kilograms to target unit
-            const convertedWeight = weightInKg * conversionRates[toUnit];
+            const lunarString = `${lunar.lunarYear}年${lunar.lunarMonth}月${lunar.lunarDay}日`;
 
-            // Format result
-            document.getElementById('convertedWeight').innerText = formatNumber(convertedWeight);
-            document.getElementById('convertedUnit').innerText = toUnit;
+            document.getElementById('lunarResult').innerText = lunarString;
+            document.getElementById('gregorianResult').innerText = '无';
         }
 
-        function formatNumber(num) {
-            if (num % 1 === 0) {
-                return num.toString();
-            } else {
-                return num.toFixed(6).replace(/\.?0+$/, '');
+        function convertToGregorian() {
+            const lunarDate = document.getElementById('lunarDate').value;
+            if (!lunarDate) {
+                alert('请先输入农历日期');
+                return;
             }
+
+            const parts = lunarDate.split('-');
+            if (parts.length !== 3) {
+                alert('农历日期格式不正确，请使用 YYYY-MM-DD 格式');
+                return;
+            }
+
+            const year = parseInt(parts[0]);
+            const month = parseInt(parts[1]);
+            const day = parseInt(parts[2]);
+
+            if (isNaN(year) || isNaN(month) || isNaN(day)) {
+                alert('农历日期格式不正确');
+                return;
+            }
+
+            const lunar = {
+                lunarYear: year,
+                lunarMonth: month,
+                lunarDay: day
+            };
+
+            const solar = LunarCalendar.lunarToSolar(lunar);
+
+            const gregorianString = `${solar.getFullYear()}-${String(solar.getMonth() + 1).padStart(2, '0')}-${String(solar.getDate()).padStart(2, '0')}`;
+
+            document.getElementById('gregorianResult').innerText = gregorianString;
+            document.getElementById('lunarResult').innerText = '无';
         }
     </script>
 </body>
