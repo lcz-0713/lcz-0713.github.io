@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../dark-mode.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="../button.css">
+    <script src="../footer.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,14 +30,14 @@
             margin-bottom: 20px;
         }
         button {
-            padding: 10px;
+            padding: 15px 30px;
             font-size: 1em;
-            margin: 10px;
-            border: 1px solid #ddd;
+            border: none;
             border-radius: 5px;
             background-color: #4caf50;
             color: white;
             cursor: pointer;
+            margin-top: 20px;
         }
         button:hover {
             background-color: #45a049;
@@ -44,77 +45,70 @@
         .result {
             font-size: 1.2em;
             margin: 20px 0;
-            padding: 20px;
+            padding: 15px;
             background: #e0ffe0;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 2px solid #4caf50;
+            display: none;
         }
-        body.dark-mode textarea {
+        .highlight {
+            background: #fdd;
+            border-color: #d44;
+        }
+        body.dark-mode button {
             background-color: #333;
             color: #fff;
-            border-color: #666;
         }
-        body.dark-mode input {
-            background-color: #333;
-            color: #fff;
-            border-color: #666;
+        body.dark-mode button:hover {
+            background-color: #444;
         }
         body.dark-mode .result {
             background: #333;
-            border-color: #4caf50;
-        }
-        body.dark-mode select {
-            background-color: #333;
             color: #fff;
-            border-color: #666;
+            border-color: #4caf50;
         }
     </style>
 </head>
 <body>
-    <a class="home-button" href="../index.html"> 
-        <i class="fa fa-home" style="font-size:48px;"></i>  
+    <a class="home-button" href="../index.html">
+        <i class="fa fa-home" style="font-size:48px;"></i>
     </a>
-    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
-        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    <a id="toggle-dark-mode" class="toggle-dark-mode">
+        <i class="fa fa-adjust" style="font-size:48px;"></i>
     </a>
     <div class="container">
         <h1>反应速度测试</h1>
-        <p>点击下面的按钮开始测试。当按钮变色时立即点击它！</p>
-        <button id="testButton" onclick="clickButton()" disabled>点击我</button>
-        <div id="reactionTime" class="result">准备好测试了吗？点击下面的按钮开始测试。</div>
+        <button id="reactionButton" onclick="buttonClicked()">点击测试</button>
+        <div id="result" class="result">
+            <p>您的反应时间是: <span id="reactionTime">0</span> 毫秒</p>
+        </div>
     </div>
-    <script src="../script.js"></script>
     <script>
-        let startTime;
-        let testButton = document.getElementById('testButton');
-        let resultDiv = document.getElementById('reactionTime');
+        let startTime, endTime;
+        let isWaiting = false;
 
-        function startTest() {
-            testButton.disabled = true;
-            testButton.style.backgroundColor = '#4caf50';
-            resultDiv.textContent = '准备...';
-
-            // 2到7秒之间随机时间
-            setTimeout(() => {
-                testButton.style.backgroundColor = '#ff5722';
-                testButton.disabled = false;
-                resultDiv.textContent = '点击！';
-                startTime = Date.now();
-            }, Math.floor(Math.random() * 5000) + 2000);
-        }
-
-        function clickButton() {
-            if (startTime) {
-                let reactionTime = Date.now() - startTime;
-                resultDiv.textContent = `你的反应时间是 ${reactionTime} 毫秒。`;
-                startTime = null;
-                testButton.disabled = true;
-                testButton.style.backgroundColor = '#4caf50';
-                setTimeout(startTest, 2000); // 2秒后重新开始
+        function buttonClicked() {
+            if (isWaiting) {
+                endTime = new Date().getTime();
+                const reactionTime = endTime - startTime;
+                document.getElementById('reactionTime').innerText = reactionTime;
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('reactionButton').style.backgroundColor = '#4caf50'; // 重置颜色
+                isWaiting = false;
+            } else {
+                // 开始测试
+                document.getElementById('result').style.display = 'none';
+                document.getElementById('reactionButton').style.backgroundColor = '#ff5722'; // 改变颜色
+                document.getElementById('reactionButton').innerText = '等待...';
+                const waitTime = Math.floor(Math.random() * 5000) + 1000; // 1 到 5 秒
+                setTimeout(() => {
+                    document.getElementById('reactionButton').innerText = '点击!';
+                    document.getElementById('reactionButton').style.backgroundColor = '#4caf50'; // 改变颜色
+                    startTime = new Date().getTime();
+                    isWaiting = true;
+                }, waitTime);
             }
         }
-
-        startTest(); // 页面加载时开始测试
     </script>
 </body>
 </html>
