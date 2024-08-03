@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>井字棋游戏</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../button.css">
+    <link rel="stylesheet" href="../dark-mode.css">
+    <script src="../footer.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .cell:hover {
+            background-color: #f0f0f0;
+        }
+        .status {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .select-container {
+            margin-bottom: 20px;
+        }
+        select {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #333;
+            color: #f4f4f4;
+        }
+        body.dark-mode .cell {
+            background-color: #444;
+            border-color: #555;
+            color: #f4f4f4;
+        }
+        body.dark-mode .cell:hover {
+            background-color: #555;
+        }
+        body.dark-mode .status {
+            color: #f4f4f4;
+        }
+        body.dark-mode .button {
+            background-color: #4caf50;
+        }
+        body.dark-mode .button:hover {
+            background-color: #45a049;
+        }
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <a class="home-button" href="../index.html"> 
+        <i class="fa fa-home" style="font-size:48px;"></i>  
+    </a>
+    <a id="toggle-dark-mode" class="toggle-dark-mode"> 
+        <i class="fa fa-adjust" style="font-size:48px;"></i>  
+    </a>
+    <h1>井字棋游戏</h1>
+    <div class="select-container">
+        <label for="player-select">选择先手/后手:</label>
+        <select id="player-select">
+            <option value="X" selected>先手 (X)</option>
+            <option value="O">后手 (O)</option>
+        </select>
+    </div>
+    <div class="status" id="status">玩家 X 的回合</div>
+    <div class="board" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+    <button class="button" onclick="restartGame()">重新开始</button>
+    <script src="../script.js"></script>
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        const playerSelect = document.getElementById('player-select');
+        const darkModeToggle = document.getElementById('toggle-dark-mode');
+        let currentPlayer = 'X'; // 当前玩家
+        let gameBoard = ['', '', '', '', '', '', '', '', '']; // 游戏状态
+        let gameActive = true; // 游戏是否进行中
+        let isPlayerTurn = true; // 玩家是否轮到
+        let isDarkMode = false; // 暗黑模式状态
+
+        function handleClick(event) {
+            const index = event.target.getAttribute('data-index');
+            if (gameBoard[index] !== '' || !gameActive || !isPlayerTurn) return;
+
+            gameBoard[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+
+            if (checkWinner(currentPlayer)) {
+                status.textContent = `玩家 ${currentPlayer} 胜利!`;
+                gameActive = false;
+                return;
+            }
+
+            if (gameBoard.every(cell => cell !== '')) {
+                status.textContent = '平局!';
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = 'O';
+            isPlayerTurn = false;
+            status.textContent = `电脑的回合`;
+            setTimeout(computerMove, 500); // 电脑思考时间
+        }
+
+        function computerMove() {
+            const bestMove = getBestMove();
+            gameBoard[bestMove] = 'O';
+            document.querySelector(`.cell[data-index="${bestMove}"]`).textContent = 'O';
+
+            if (checkWinner('O')) {
+                status.textContent = '电脑胜利!';
+                gameActive = false;
+                return;
+            }
+
+            if (gameBoard.every(cell => cell !== '')) {
+                status.textContent = '平局!';
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = 'X';
+            isPlayerTurn = true;
+            status.textContent = `玩家 ${currentPlayer} 的回合`;
+        }
+
+        function getBestMove() {
+            const emptyIndices = gameBoard.map((cell, index) => cell === '' ? index : null).filter(index => index !== null);
+            let bestScore = -Infinity;
+            let bestMove = -1;
+
+            for (let i = 0; i < emptyIndices.length; i++) {
+                const move = emptyIndices[i];
+                gameBoard[move] = 'O';
+                const score = minimax(gameBoard, false);
+                gameBoard[move] = '';
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = move;
+                }
+            }
+
+            return bestMove;
+        }
+
+        function minimax(board, isMaximizing) {
+            const winner = checkWinner('O') ? 'O' : (checkWinner('X') ? 'X' : null);
+
+            if (winner === 'O') return 10;
+            if (winner === 'X') return -10;
+            if (board.every(cell => cell !== '')) return 0;
+
+            let scores = [];
+            const emptyIndices = board.map((cell, index) => cell === '' ? index : null).filter(index => index !== null);
+
+            for (let i = 0; i < emptyIndices.length; i++) {
+                const move = emptyIndices[i];
+                board[move] = isMaximizing ? 'O' : 'X';
+                const score = minimax(board, !isMaximizing);
+                board[move] = '';
+                scores.push(score);
+            }
+
+            return isMaximizing ? Math.max(...scores) : Math.min(...scores);
+        }
+
+        function checkWinner(player) {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // 行
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // 列
+                [0, 4, 8], [2, 4, 6] // 对角线
+            ];
+
+            return winPatterns.some(pattern => {
+                return pattern.every(index => gameBoard[index] === player);
+            });
+        }
+
+        function restartGame() {
+            currentPlayer = playerSelect.value || 'X';
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            isPlayerTurn = currentPlayer === 'X'; // 如果玩家选择了先手，则玩家先开始
+            status.textContent = `玩家 ${currentPlayer} 的回合`;
+            document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+
+            // 如果电脑是先手，则立即执行电脑的回合
+            if (!isPlayerTurn) {
+                setTimeout(computerMove, 500);
+            }
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+        }
+
+        board.addEventListener('click', handleClick);
+        playerSelect.addEventListener('change', restartGame);
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+
+        // 初始化游戏状态
+        restartGame();
+    </script>
+</body>
+</html>
