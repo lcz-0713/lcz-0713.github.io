@@ -15,6 +15,9 @@ body.dark-mode h1 {
 body.dark-mode h2 {
     color: #fff;
 }
+body.dark-mode .tools li a {
+    border: 1px solid #3a3a3a;
+}
 
 body.dark-mode h3 {
     color: #fff;
